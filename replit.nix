@@ -1,8 +1,7 @@
 
 { pkgs }: {
   deps = [
-    pkgs.python3
-    pkgs.python3Packages.gunicorn
+    pkgs.python311
     pkgs.postgresql
     pkgs.openssl
   ];

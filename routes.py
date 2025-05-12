@@ -110,8 +110,8 @@ def file_to_data_url(file_stream, content_type):
 
 @app.route('/')
 def index():
-    """Health check endpoint"""
-    return 'OK', 200
+    """Main application endpoint"""
+    return redirect(url_for('home'))
 
 @app.route('/home')
 def home():

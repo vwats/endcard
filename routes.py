@@ -89,8 +89,8 @@ def file_to_data_url(file_stream, content_type):
 @app.route('/')
 def index():
     """Home page route"""
-    # Simple health check response for Replit Autoscale
-    if not request.args and not request.data:
+    # Handle health checks from deployment system
+    if request.method == 'HEAD' or (not request.args and not request.data):
         return 'OK', 200
 
     user = get_current_user()

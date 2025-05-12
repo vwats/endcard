@@ -4,7 +4,7 @@ channel = "stable-24_05"
 
 [deployment]
 run = ["sh", "-c", "python3 -m gunicorn main:app --bind 0.0.0.0:5000"]
-build = ["sh", "-c", "pip install -r requirements.txt"]
+build = ["sh", "-c", "pip install poetry && poetry install"]
 
 [workflows]
 runButton = "Run"

@@ -1,8 +1,10 @@
+modules = ["python-3.11"]
 [nix]
 channel = "stable-24_05"
 
 [deployment]
 run = ["sh", "-c", "cd CodeCraft && python3 -m gunicorn main:app --bind 0.0.0.0:5000"]
+build = ["sh", "-c", "pip install -e ."]
 
 [workflows]
 runButton = "Run"

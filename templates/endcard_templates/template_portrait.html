@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MRAID Endcard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: black;
+        }
+        #content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            background-color: #000;
+        }
+        #media {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        {% if is_video %}
+            <video id="media" src="{{ data_url }}" playsinline autoplay loop muted></video>
+        {% else %}
+            <img id="media" src="{{ data_url }}" alt="Endcard">
+        {% endif %}
+    </div>
+    <script>
+        (function() {
+            var content = document.getElementById('content');
+            var media = document.getElementById('media');
+            
+            function handleClick(e) {
+                e.preventDefault();
+                var clickUrl = window.clickUrl || window.mraidRedirectUrl || 'store://details';
+                if (typeof mraid !== 'undefined') {
+                    mraid.open(clickUrl);
+                } else {
+                    window.open(clickUrl, '_blank');
+                }
+            }
+
+            function handleOrientation() {
+                var isPortrait = window.innerHeight > window.innerWidth;
+                media.style.objectFit = isPortrait ? 'contain' : 'contain';
+            }
+
+            function initAd() {
+                if (typeof mraid !== 'undefined') {
+                    mraid.useCustomClose(true);
+                }
+                content.addEventListener('click', handleClick);
+                content.addEventListener('touchend', handleClick);
+                window.addEventListener('resize', handleOrientation);
+                handleOrientation();
+            }
+
+            if (typeof mraid !== 'undefined') {
+                if (mraid.getState() === 'loading') {
+                    mraid.addEventListener('ready', initAd);
+                } else {
+                    initAd();
+                }
+            } else {
+                initAd();
+            }
+        })();
+    </script>
+</body>
+</html>

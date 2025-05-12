@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EndCard Converter Pro</title>
+    <!-- Bootstrap CSS (Replit-themed) -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-4">
+        <header class="py-4 mb-5 border-bottom border-dark">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="me-3 p-2 rounded-circle shimmer" style="background: rgba(99, 102, 241, 0.1);">
+                        <i class="fas fa-crop-alt fs-4 text-primary rotate-icon"></i>
+                    </div>
+                    <h1 class="gradient-text fs-3 m-0">EndCard Converter Pro</h1>
+                    <span class="badge-pro ms-2 float-animation">2.0</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('history') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-history me-2"></i>View History
+                    </a>
+                    <a href="{{ url_for('upgrade') }}" class="btn btn-warning">
+                        <i class="fas fa-crown me-2"></i>Upgrade
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="row mb-5">
+            <div class="col-lg-8">
+                <!-- Main conversion card -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="fs-4 m-0"><i class="fas fa-magic text-primary me-2"></i>Create HTML Endcards</h2>
+                    </div>
+                    <div class="card-body">
+                        <p class="lead mb-4">Transform your media into a single rotatable HTML endcard that works in both portrait and landscape orientations.</p>
+
+                        <!-- Hidden endcard ID field for editing existing records -->
+                        <input type="hidden" id="endcard-id" value="{{ endcard.id if endcard else '' }}">
+
+                        <!-- Upload Form -->
+                        <form id="combined-upload-form" class="mb-4">
+                            <div class="card bg-gradient-dark border-0 text-white mb-4 shimmer">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="me-3 float-animation">
+                                            <i class="fas fa-star fs-3 text-warning"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="card-title">New: Single-File Rotatable Format</h5>
+                                            <p class="card-text mb-0">We've simplified the process! Now you only need to upload one file that automatically rotates between portrait and landscape based on device orientation.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row justify-content-center">
+                                <div class="col-md-10">
+                                    <!-- Media File Upload -->
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="mb-3 d-flex align-items-center">
+                                                <i class="fas fa-sync-alt text-primary me-2"></i>
+                                                Rotatable Format
+                                            </h5>
+                                            <div class="mb-3">
+                                                <label for="portrait-file-input" class="form-label small text-secondary d-flex align-items-center">
+                                                    Portrait View <span class="badge bg-dark ms-2">9:16</span>
+                                                </label>
+                                                <input type="file" class="form-control mb-3" id="portrait-file-input" name="portrait_file" accept=".jpg,.jpeg,.png,.mp4">
+
+                                                <label for="landscape-file-input" class="form-label small text-secondary d-flex align-items-center">
+                                                    Landscape View <span class="badge bg-dark ms-2">16:9</span>
+                                                </label>
+                                                <input type="file" class="form-control" id="landscape-file-input" name="landscape_file" accept=".jpg,.jpeg,.png,.mp4">
+
+                                                <div class="form-text small mt-2"><i class="fas fa-info-circle me-1"></i> Max: 2.2MB per file | JPEG, PNG, MP4</div>
+                                            </div>
+
+                                            <div class="text-center preview-area mt-4 mb-3 d-none">
+                                                <div class="preview-wrapper mx-auto mb-3">
+                                                    <img id="media-preview" class="img-fluid rounded" style="max-height: 180px;" />
+                                                    <video id="video-preview" class="img-fluid rounded d-none" style="max-height: 180px;" autoplay loop muted playsinline></video>
+                                                </div>
+                                                <button type="button" id="clear-file-btn" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-times me-1"></i> Clear File
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 col-md-8 mx-auto mt-4">
+                                <button type="submit" class="btn btn-primary py-3 btn-glow" id="combined-upload-btn" disabled>
+                                    <i class="fas fa-wand-magic-sparkles me-2 rotate-icon"></i>Generate Rotatable Endcard
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Features card -->
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="fs-5 m-0"><i class="fas fa-star text-warning me-2"></i>Features</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check-circle text-primary"></i> <strong>NEW!</strong> Single file rotatable format</li>
+                            <li><i class="fas fa-check-circle"></i> Auto-rotation between portrait and landscape</li>
+                            <li><i class="fas fa-check-circle"></i> Compatible with images (JPEG, PNG) and videos (MP4)</li>
+                            <li><i class="fas fa-check-circle"></i> Interactive preview with rotation controls</li>
+                            <li><i class="fas fa-check-circle"></i> Optimized file size (max 2.2MB)</li>
+                            <li><i class="fas fa-check-circle"></i> Conversion history tracking</li>
+                        </ul>
+
+                        <div class="mt-4 p-3 rounded shimmer" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2);">
+                            <h6 class="d-flex align-items-center">
+                                <i class="fas fa-coins text-warning me-2 float-animation"></i>
+                                Credit System
+                            </h6>
+                            <p class="small mb-2">You have {{ session.get('credits', 0) }} credits remaining.</p>
+                            <a href="/upgrade" class="btn btn-warning w-100">
+                                <i class="fas fa-unlock-alt me-1"></i> Buy Credits
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" class="text-center py-5 d-none">
+            <div class="card p-4 loading-pulse">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h5 class="mb-0">Converting your files...</h5>
+                    <p class="text-secondary mt-2">This may take a few moments</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Display -->
+        <div id="error-container" class="alert alert-danger d-none" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-circle fs-4 me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Error Occurred</h5>
+                    <span id="error-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section (Hidden by default) -->
+        <div id="results-container" class="d-none">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="fs-5 m-0"><i class="fas fa-check-circle text-success me-2"></i>Your Rotatable HTML Endcard</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <div class="card bg-dark">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <h5 class="mb-0 fs-6 me-3">Preview</h5>
+                                        <div id="orientation-status" class="badge me-2 text-white" style="background: linear-gradient(45deg, #6366f1, #8b5cf6);">
+                                            Portrait Mode
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button id="rotate-preview-btn" class="btn btn-sm btn-secondary me-2">
+                                            <i class="fas fa-sync-alt me-1 rotate-icon"></i> Rotate
+                                        </button>
+                                        <button id="download-endcard-btn" class="btn btn-sm btn-primary btn-glow">
+                                            <i class="fas fa-download me-1"></i> Download
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex flex-column align-items-center p-4">
+                                    <div id="preview-container" class="preview-container portrait-container mb-3 shimmer">
+                                        <iframe id="endcard-preview" class="preview-frame" src="about:blank"></iframe>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <p class="small text-secondary mb-1">This endcard will automatically rotate based on device orientation</p>
+                                        <div class="d-flex justify-content-center gap-3 mt-2">
+                                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-share-alt me-1"></i> Share
+                                            </a>
+                                            <a href="/history" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-history me-1"></i> View History
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="py-4 mt-5 text-center border-top border-dark">
+            <div class="row">
+                <div class="col-md-6 text-md-start">
+                    <p class="mb-0">&copy; 2023 EndCard Converter Pro</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <a href="/upgrade" class="text-decoration-none text-secondary me-3">Upgrade</a>
+                        <a href="/history" class="text-decoration-none text-secondary me-3">History</a>
+                        <a href="#" class="text-decoration-none text-secondary">Support</a>
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

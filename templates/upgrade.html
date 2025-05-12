@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade - EndCard Converter Pro</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-4">
+        <header class="py-4 mb-5 border-bottom border-dark">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="me-3 p-2 rounded-circle" style="background: rgba(99, 102, 241, 0.1);">
+                        <i class="fas fa-crop-alt fs-4 text-primary"></i>
+                    </div>
+                    <h1 class="gradient-text fs-3 m-0">EndCard Converter Pro</h1>
+                    <span class="badge-pro ms-2">2.0</span>
+                </div>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-home me-2"></i>Back to Home
+                </a>
+            </div>
+        </header>
+
+        {% if success %}
+        <div class="alert alert-success mb-4">
+            <div class="d-flex">
+                <div class="me-3">
+                    <i class="fas fa-check-circle fs-4"></i>
+                </div>
+                <div>
+                    <h4 class="alert-heading mb-1">Credits Added Successfully!</h4>
+                    <p class="mb-0">{{ credits_added }} credits have been added to your account. Your new balance is {{ session.get('credits', 0) }} credits.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row mb-5 gx-4">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body p-4">
+                        <h2 class="gradient-text mb-4"><i class="fas fa-bolt me-2"></i>Why Upgrade?</h2>
+                        <ul class="feature-list mb-4">
+                            <li><i class="fas fa-check-circle"></i> Create unlimited HTML endcards</li>
+                            <li><i class="fas fa-check-circle"></i> High-quality media conversion</li>
+                            <li><i class="fas fa-check-circle"></i> Access to historical conversions</li>
+                            <li><i class="fas fa-check-circle"></i> Batch processing capability</li>
+                            <li><i class="fas fa-check-circle"></i> Priority customer support</li>
+                            <li><i class="fas fa-check-circle"></i> Higher file size limits (coming soon)</li>
+                        </ul>
+                        <div class="card bg-dark p-3 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary p-2 me-3">
+                                    <i class="fas fa-info text-white"></i>
+                                </div>
+                                <p class="mb-0 small">Each credit allows you to create one set of endcards (portrait and landscape version)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="fs-4 m-0"><i class="fas fa-crown text-warning me-2"></i>Select Your Plan</h2>
+                        <span class="badge-pro">Premium</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="card h-100 border-0" style="background: linear-gradient(135deg, rgba(100, 100, 240, 0.05) 0%, rgba(100, 100, 240, 0.1) 100%);">
+                                    <div class="card-body text-center p-4">
+                                        <div class="rounded-circle bg-dark d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                                            <i class="fas fa-user fs-3 text-primary"></i>
+                                        </div>
+                                        <h3 class="fs-5 mb-3">Basic</h3>
+                                        <div class="d-flex justify-content-center align-items-end mb-3">
+                                            <span class="display-5 fw-bold">$10</span>
+                                            <span class="text-secondary">/pack</span>
+                                        </div>
+                                        <p class="mb-4 pb-2">
+                                            <span class="badge bg-dark fs-6 mb-1 d-block py-2">10 Credits</span>
+                                            <span class="text-secondary small">$1.00 per credit</span>
+                                        </p>
+                                        <form action="/create-checkout-session" method="POST">
+                                            <input type="hidden" name="package" value="starter">
+                                            <button type="submit" class="btn btn-primary w-100 py-2">
+                                                <i class="fas fa-shopping-cart me-2"></i>Buy Now
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="card h-100 border-0 position-relative" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.2) 100%);">
+                                    <div class="position-absolute" style="top: -12px; left: 50%; transform: translateX(-50%);">
+                                        <span class="badge" style="background: linear-gradient(90deg, #f59e0b, #fb923c);">POPULAR</span>
+                                    </div>
+                                    <div class="card-body text-center p-4">
+                                        <div class="rounded-circle bg-dark d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                                            <i class="fas fa-rocket fs-3 text-warning"></i>
+                                        </div>
+                                        <h3 class="fs-5 mb-3">Standard</h3>
+                                        <div class="d-flex justify-content-center align-items-end mb-3">
+                                            <span class="display-5 fw-bold">$25</span>
+                                            <span class="text-secondary">/pack</span>
+                                        </div>
+                                        <p class="mb-4 pb-2">
+                                            <span class="badge bg-dark fs-6 mb-1 d-block py-2">30 Credits</span>
+                                            <span class="text-warning small">$0.83 per credit</span>
+                                        </p>
+                                        <form action="/create-checkout-session" method="POST">
+                                            <input type="hidden" name="package" value="popular">
+                                            <button type="submit" class="btn btn-warning w-100 py-2">
+                                                <i class="fas fa-shopping-cart me-2"></i>Buy Now
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="card h-100 border-0" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(139, 92, 246, 0.2) 100%);">
+                                    <div class="card-body text-center p-4">
+                                        <div class="rounded-circle bg-dark d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                                            <i class="fas fa-crown fs-3 text-secondary-accent" style="color: #8b5cf6;"></i>
+                                        </div>
+                                        <h3 class="fs-5 mb-3">Pro</h3>
+                                        <div class="d-flex justify-content-center align-items-end mb-3">
+                                            <span class="display-5 fw-bold">$45</span>
+                                            <span class="text-secondary">/pack</span>
+                                        </div>
+                                        <p class="mb-4 pb-2">
+                                            <span class="badge bg-dark fs-6 mb-1 d-block py-2">60 Credits</span>
+                                            <span class="text-secondary-accent small" style="color: #8b5cf6;">$0.75 per credit</span>
+                                        </p>
+                                        <form action="/create-checkout-session" method="POST">
+                                            <input type="hidden" name="package" value="pro">
+                                            <button type="submit" class="btn btn-primary w-100 py-2" style="background: linear-gradient(90deg, #8b5cf6, #6366f1);">
+                                                <i class="fas fa-shopping-cart me-2"></i>Buy Now
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card bg-dark p-3 mt-4 mb-2">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-shield-alt fs-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fs-6 mb-1">Secure Transaction</h5>
+                                    <p class="mb-0 small text-secondary">
+                                        Payments are securely processed by Stripe. Your information is protected with industry-standard encryption.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <img src="https://stripe.com/img/v3/home/social-platforms.svg" alt="Payment Methods" style="height: 24px; opacity: 0.5;" class="me-2">
+                            <span class="text-secondary small">All major credit cards accepted</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-5 mb-5">
+            <div class="card-header">
+                <h3 class="fs-5 m-0"><i class="fas fa-question-circle text-primary me-2"></i>Frequently Asked Questions</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="mb-4">
+                            <h4 class="fs-6">How do credits work?</h4>
+                            <p class="text-secondary small">Each credit allows you to convert one set of files to HTML endcards (both portrait and landscape formats). Credits never expire.</p>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="fs-6">Can I get a refund?</h4>
+                            <p class="text-secondary small">We offer refunds within 7 days of purchase if you haven't used any credits from your package.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="mb-4">
+                            <h4 class="fs-6">How long do credits last?</h4>
+                            <p class="text-secondary small">Credits never expire. Once purchased, they remain in your account until used.</p>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="fs-6">Is there a subscription option?</h4>
+                            <p class="text-secondary small">Currently, we only offer one-time credit packages. Subscription plans are coming soon.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="py-4 mt-5 text-center border-top border-dark">
+            <div class="row">
+                <div class="col-md-6 text-md-start">
+                    <p class="mb-0">&copy; 2023 EndCard Converter Pro</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <a href="/upgrade" class="text-decoration-none text-secondary me-3">Upgrade</a>
+                        <a href="/history" class="text-decoration-none text-secondary me-3">History</a>
+                        <a href="#" class="text-decoration-none text-secondary">Support</a>
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

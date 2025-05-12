@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EndCard Converter Pro - Conversion History</title>
+    <!-- Bootstrap CSS (Replit-themed) -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-4">
+        <header class="py-4 mb-5 border-bottom border-dark">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="me-3 p-2 rounded-circle" style="background: rgba(99, 102, 241, 0.1);">
+                        <i class="fas fa-crop-alt fs-4 text-primary"></i>
+                    </div>
+                    <h1 class="gradient-text fs-3 m-0">EndCard Converter Pro</h1>
+                    <span class="badge-pro ms-2">2.0</span>
+                </div>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-home me-2"></i>Back to Home
+                </a>
+            </div>
+        </header>
+
+        <div class="card mb-5">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="fs-4 m-0"><i class="fas fa-history text-primary me-2"></i>Conversion History</h2>
+                <div>
+                    <span class="badge bg-dark">{{ endcards|length }} Conversions</span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if endcards %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="text-center">#</th>
+                                <th scope="col">Portrait File</th>
+                                <th scope="col">Landscape File</th>
+                                <th scope="col">Date</th>
+                                <th scope="col" class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for endcard in endcards %}
+                            <tr>
+                                <td class="text-center">{{ endcard.id }}</td>
+                                <td>
+                                    {% if endcard.portrait_created %}
+                                    <div class="d-flex align-items-center">
+                                        {% if endcard.portrait_file_type == 'image' %}
+                                        <span class="badge me-2" style="background: linear-gradient(45deg, #06b6d4, #0ea5e9);">
+                                            <i class="fas fa-image"></i>
+                                        </span>
+                                        {% else %}
+                                        <span class="badge me-2" style="background: linear-gradient(45deg, #8b5cf6, #6366f1);">
+                                            <i class="fas fa-video"></i>
+                                        </span>
+                                        {% endif %}
+                                        <div>
+                                            <div class="d-flex align-items-center">
+                                                <span>{{ endcard.portrait_filename }}</span>
+                                                <span class="badge bg-dark ms-2">9:16</span>
+                                            </div>
+                                            <small class="text-secondary">{{ (endcard.portrait_file_size / 1024)|round(1) }} KB</small>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-secondary">
+                                        <i class="fas fa-minus-circle me-2"></i>No portrait file
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if endcard.landscape_created %}
+                                    <div class="d-flex align-items-center">
+                                        {% if endcard.landscape_file_type == 'image' %}
+                                        <span class="badge me-2" style="background: linear-gradient(45deg, #06b6d4, #0ea5e9);">
+                                            <i class="fas fa-image"></i>
+                                        </span>
+                                        {% else %}
+                                        <span class="badge me-2" style="background: linear-gradient(45deg, #8b5cf6, #6366f1);">
+                                            <i class="fas fa-video"></i>
+                                        </span>
+                                        {% endif %}
+                                        <div>
+                                            <div class="d-flex align-items-center">
+                                                <span>{{ endcard.landscape_filename }}</span>
+                                                <span class="badge bg-dark ms-2">16:9</span>
+                                            </div>
+                                            <small class="text-secondary">{{ (endcard.landscape_file_size / 1024)|round(1) }} KB</small>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-secondary">
+                                        <i class="fas fa-minus-circle me-2"></i>No landscape file
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-calendar-alt text-secondary me-2"></i>
+                                        <span>{{ endcard.created_at.strftime('%Y-%m-%d') }}</span>
+                                    </div>
+                                    <small class="text-secondary">{{ endcard.created_at.strftime('%H:%M') }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('index') }}?endcard_id={{ endcard.id }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card bg-dark p-5 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-folder-open fs-1 text-secondary"></i>
+                    </div>
+                    <h3 class="fs-5 mb-3">No Conversion History Found</h3>
+                    <p class="text-secondary mb-4">You haven't created any endcards yet.</p>
+                    <div>
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">
+                            <i class="fas fa-plus-circle me-2"></i>Create Your First Endcard
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <footer class="py-4 mt-5 text-center border-top border-dark">
+            <div class="row">
+                <div class="col-md-6 text-md-start">
+                    <p class="mb-0">&copy; 2023 EndCard Converter Pro</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <a href="/upgrade" class="text-decoration-none text-secondary me-3">Upgrade</a>
+                        <a href="/history" class="text-decoration-none text-secondary me-3">History</a>
+                        <a href="#" class="text-decoration-none text-secondary">Support</a>
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

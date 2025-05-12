@@ -111,11 +111,10 @@ def file_to_data_url(file_stream, content_type):
 @app.route('/')
 def index():
     """Root endpoint with health check support"""
-    # For health checks
-    if (request.headers.get('User-Agent', '').startswith('kube-probe') or
-        request.headers.get('X-Forwarded-For') is None):
+    # For health checks - respond to any GET/HEAD request without args
+    if request.method in ['GET', 'HEAD'] and not request.args:
         return 'OK', 200
-    
+        
     # For regular users, show the home page
     return home()
 

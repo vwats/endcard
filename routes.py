@@ -116,7 +116,7 @@ def index():
         return 'OK', 200
         
     # For regular users, show the home page
-    return home()
+    return render_template('index.html', user=get_current_user())
 
 @app.route('/home')
 def home():

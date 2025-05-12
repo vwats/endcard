@@ -89,6 +89,10 @@ def file_to_data_url(file_stream, content_type):
 @app.route('/')
 def index():
     """Home page route"""
+    # Handle health check requests
+    if request.headers.get('User-Agent', '').startswith('ELB-HealthChecker'):
+        return '', 200
+        
     user = get_current_user()
 
     # Check if we're editing an existing endcard

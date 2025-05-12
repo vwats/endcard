@@ -395,24 +395,32 @@ def get_endcard_data(endcard_id):
 
 import stripe
 import os
-from models import SubscriptionTier
 
 # Configure Stripe
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 app.config['STRIPE_PUBLIC_KEY'] = os.environ.get('STRIPE_PUBLISHABLE_KEY')
 
-# Initialize subscription tier Stripe IDs
-basic_tier = SubscriptionTier.get_basic_tier()
-basic_tier['stripe_price_id'] = os.environ.get('STRIPE_BASIC_PRICE_ID')
-basic_tier['stripe_product_id'] = os.environ.get('STRIPE_BASIC_PRODUCT_ID')
+# Initialize package Stripe IDs
+basic_package = {
+    'stripe_price_id': os.environ.get('STRIPE_BASIC_PRICE_ID'),
+    'stripe_product_id': os.environ.get('STRIPE_BASIC_PRODUCT_ID'),
+    'credits': 10,
+    'price': 1000
+}
 
-standard_tier = SubscriptionTier.get_standard_tier()
-standard_tier['stripe_price_id'] = os.environ.get('STRIPE_STANDARD_PRICE_ID')
-standard_tier['stripe_product_id'] = os.environ.get('STRIPE_STANDARD_PRODUCT_ID')
+standard_package = {
+    'stripe_price_id': os.environ.get('STRIPE_STANDARD_PRICE_ID'),
+    'stripe_product_id': os.environ.get('STRIPE_STANDARD_PRODUCT_ID'),
+    'credits': 30,
+    'price': 2500
+}
 
-pro_tier = SubscriptionTier.get_pro_tier()
-pro_tier['stripe_price_id'] = os.environ.get('STRIPE_PRO_PRICE_ID')
-pro_tier['stripe_product_id'] = os.environ.get('STRIPE_PRO_PRODUCT_ID')
+pro_package = {
+    'stripe_price_id': os.environ.get('STRIPE_PRO_PRICE_ID'),
+    'stripe_product_id': os.environ.get('STRIPE_PRO_PRODUCT_ID'),
+    'credits': 60,
+    'price': 4500
+}
 
 @app.route('/create-checkout-session', methods=['POST'])
 @login_required

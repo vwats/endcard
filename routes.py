@@ -84,6 +84,9 @@ def file_to_data_url(file_stream, content_type):
 @app.route('/')
 def index():
     """Home page route"""
+    if 'google_token' not in session:
+        return redirect(url_for('google_login'))
+        
     user = get_current_user()
     
     # Check if we're editing an existing endcard

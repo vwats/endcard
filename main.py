@@ -12,8 +12,5 @@ signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
 if __name__ == "__main__":
-    try:
-        app.run(host="0.0.0.0", port=5000, debug=True)
-    except Exception as e:
-        print(f"Error starting server: {e}")
-        sys.exit(1)
+    # When using Gunicorn, we don't need to run the app directly
+    from app import app

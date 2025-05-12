@@ -39,34 +39,56 @@ ALLOWED_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS.union(ALLOWED_VIDEO_EXTENSIONS)
 MAX_FILE_SIZE = 2.2 * 1024 * 1024
 
 def get_current_user():
-    """Get or create a user based on session ID"""
-    if 'user_session_id' not in session:
-        session['user_session_id'] = str(uuid.uuid4())
+    """Get or create a user based on session ID with error handling"""
+    try:
+        # Skip user creation for health check requests
+        if request.path == '/' and request.method in ['GET', 'HEAD'] and not request.args:
+            return None
 
-    user = User.query.filter_by(session_id=session['user_session_id']).first()
+        if 'user_session_id' not in session:
+            session['user_session_id'] = str(uuid.uuid4())
 
-    if not user:
-        # Create new user
-        user = User(session_id=session['user_session_id'])
-        db.session.add(user)
-        db.session.flush()  # Flush to get the user ID
+        try:
+            user = User.query.filter_by(session_id=session['user_session_id']).first()
+        except Exception as e:
+            logging.error(f"Database error while retrieving user: {e}")
+            return None
 
-        # Initialize credits for new user
-        user_credit = UserCredit(user_id=user.id)
-        db.session.add(user_credit)
-        db.session.commit()
+        if not user:
+            try:
+                # Create new user
+                user = User(session_id=session['user_session_id'])
+                db.session.add(user)
+                db.session.flush()  # Flush to get the user ID
 
-    # Store credits in session for easy access
-    if hasattr(user, 'credits') and user.credits:
-        session['credits'] = user.credits.credits
-    else:
-        # Handle case where user doesn't have a credits record
-        user_credit = UserCredit(user_id=user.id)
-        db.session.add(user_credit)
-        db.session.commit()
-        session['credits'] = user_credit.credits
+                # Initialize credits for new user
+                user_credit = UserCredit(user_id=user.id)
+                db.session.add(user_credit)
+                db.session.commit()
+            except Exception as e:
+                logging.error(f"Error creating new user: {e}")
+                db.session.rollback()
+                return None
 
-    return user
+        try:
+            # Store credits in session for easy access
+            if hasattr(user, 'credits') and user.credits:
+                session['credits'] = user.credits.credits
+            else:
+                # Handle case where user doesn't have a credits record
+                user_credit = UserCredit(user_id=user.id)
+                db.session.add(user_credit)
+                db.session.commit()
+                session['credits'] = user_credit.credits
+        except Exception as e:
+            logging.error(f"Error handling user credits: {e}")
+            # Don't fail the whole request if credits can't be updated
+            session['credits'] = 0
+
+        return user
+    except Exception as e:
+        logging.error(f"Unexpected error in get_current_user: {e}")
+        return None
 
 def allowed_file(filename):
     """Check if file has an allowed extension"""

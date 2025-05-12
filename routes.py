@@ -93,17 +93,17 @@ def index():
     if not request.args and request.method in ['GET', 'HEAD']:
         return 'OK', 200
         
-    # For actual application requests
     try:
+        # For actual application requests
         user = get_current_user()
 
-    # Check if we're editing an existing endcard
-    endcard_id = request.args.get('endcard_id')
-    endcard = None
-    if endcard_id and user:
-        endcard = Endcard.query.filter_by(id=endcard_id, user_id=user.id).first()
+        # Check if we're editing an existing endcard
+        endcard_id = request.args.get('endcard_id')
+        endcard = None
+        if endcard_id and user:
+            endcard = Endcard.query.filter_by(id=endcard_id, user_id=user.id).first()
 
-    return render_template('index.html', endcard=endcard, user=user)
+        return render_template('index.html', endcard=endcard, user=user)
     except Exception as e:
         logging.error(f"Error in index route: {e}")
         return 'Internal Server Error', 500

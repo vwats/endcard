@@ -127,7 +127,7 @@ def home():
         user = get_current_user()
         endcard_id = request.args.get('endcard_id')
         endcard = None
-        if endcard_id and user:
+        if endcard_id and user and user.id != 0:
             endcard = Endcard.query.filter_by(id=endcard_id, user_id=user.id).first()
         return render_template('index.html', endcard=endcard, user=user)
     except Exception as e:

@@ -108,14 +108,16 @@ def file_to_data_url(file_stream, content_type):
     encoded_content = base64.b64encode(file_stream.read()).decode('utf-8')
     return f"data:{content_type};base64,{encoded_content}"
 
+@app.route('/health')
+def health_check():
+    """Health check endpoint for deployment monitoring"""
+    return 'OK', 200
+
 @app.route('/')
 def index():
-    """Root endpoint with health check support"""
-    # For health checks - respond to any GET/HEAD request without args
+    """Root endpoint that delegates to health check or renders the home page"""
     if request.method in ['GET', 'HEAD'] and not request.args:
-        return 'OK', 200
-        
-    # For regular users, show the home page
+        return health_check()
     return render_template('index.html', user=get_current_user())
 
 @app.route('/home')

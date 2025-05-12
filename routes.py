@@ -82,13 +82,17 @@ def file_to_data_url(file_stream, content_type):
 @app.route('/')
 def index():
     """Home page route"""
-    user = get_current_user()
-
-    # Check if we're editing an existing endcard
-    endcard_id = request.args.get('endcard_id')
-    endcard = None
-    if endcard_id:
-        endcard = Endcard.query.filter_by(id=endcard_id, user_id=user.id).first()
+    try:
+        user = get_current_user()
+        endcard_id = request.args.get('endcard_id')
+        endcard = None
+        
+        if user and endcard_id:
+            endcard = Endcard.query.filter_by(id=endcard_id, user_id=user.id).first()
+            
+        # Ensure session has credits key
+        if 'credits' not in session:
+            session['credits'] = 0
 
     # Flash message if user just logged in (message set in google_auth.py)
     messages = []
@@ -117,8 +121,9 @@ def history():
         return redirect(url_for('index'))
 
 @app.route('/credits')
+@app.route('/upgrade')
 @login_required
-def credits():
+def upgrade():
     """Credits management page for viewing and purchasing credits"""
     stripe_public_key = app.config.get('STRIPE_PUBLIC_KEY', '')
     if not stripe_public_key:

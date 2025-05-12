@@ -89,11 +89,13 @@ def file_to_data_url(file_stream, content_type):
 @app.route('/')
 def index():
     """Home page route"""
-    # Handle health checks from deployment system
-    if request.method in ['GET', 'HEAD'] and not request.args and not request.data:
+    # Quick health check response for deployment system
+    if not request.args and request.method in ['GET', 'HEAD']:
         return 'OK', 200
-
-    user = get_current_user()
+        
+    # For actual application requests
+    try:
+        user = get_current_user()
 
     # Check if we're editing an existing endcard
     endcard_id = request.args.get('endcard_id')
@@ -102,6 +104,9 @@ def index():
         endcard = Endcard.query.filter_by(id=endcard_id, user_id=user.id).first()
 
     return render_template('index.html', endcard=endcard, user=user)
+    except Exception as e:
+        logging.error(f"Error in index route: {e}")
+        return 'Internal Server Error', 500
 
 @app.route('/history')
 def history():

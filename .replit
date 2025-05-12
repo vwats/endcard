@@ -15,3 +15,7 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd CodeCraft && python3 -m gunicorn main:app --bind 0.0.0.0:5000"
+
+[[ports]]
+localPort = 5000
+externalPort = 80

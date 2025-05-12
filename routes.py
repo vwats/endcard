@@ -89,8 +89,8 @@ def file_to_data_url(file_stream, content_type):
 @app.route('/')
 def index():
     """Home page route"""
-    # Handle health check requests from ELB and deployment system
-    if request.headers.get('User-Agent', '').startswith('ELB-HealthChecker') or request.headers.get('X-Deployment-Health-Check'):
+    # Simple health check response for Replit Autoscale
+    if not request.args and not request.data:
         return 'OK', 200
 
     user = get_current_user()

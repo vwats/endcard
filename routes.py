@@ -6,13 +6,13 @@ import mimetypes
 from datetime import datetime
 from io import BytesIO
 from flask import (
-    render_template, 
-    request, 
-    redirect, 
-    url_for, 
-    jsonify, 
-    session, 
-    send_file, 
+    render_template,
+    request,
+    redirect,
+    url_for,
+    jsonify,
+    session,
+    send_file,
     abort
 )
 from werkzeug.utils import secure_filename
@@ -111,12 +111,9 @@ def file_to_data_url(file_stream, content_type):
 @app.route('/')
 def index():
     """Root endpoint for health checks"""
-    # Simple health check that doesn't access the database
-    return 'OK', 200
-
-@app.route('/app')
-def main_app():
-    """Main application endpoint"""
+    # Check if it's a health check request
+    if request.method in ['GET', 'HEAD'] and not request.args:
+        return 'OK', 200
     return redirect(url_for('home'))
 
 @app.route('/home')

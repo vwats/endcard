@@ -90,7 +90,7 @@ def file_to_data_url(file_stream, content_type):
 def index():
     """Home page route"""
     # Handle health checks from deployment system
-    if request.method == 'HEAD' or (not request.args and not request.data):
+    if request.method in ['GET', 'HEAD'] and not request.args and not request.data:
         return 'OK', 200
 
     user = get_current_user()

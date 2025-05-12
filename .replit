@@ -1,22 +1,52 @@
+
 modules = ["python-3.11"]
+
 [nix]
 channel = "stable-24_05"
+packages = ["openssl", "postgresql"]
 
 [deployment]
-run = ["sh", "-c", "python3 -m gunicorn main:app --bind 0.0.0.0:5000"]
-build = ["sh", "-c", "pip install poetry && poetry install"]
+deploymentTarget = "autoscale"
+run = ["sh", "-c", "gunicorn --bind 0.0.0.0:5000 main:app"]
 
 [workflows]
-runButton = "Run"
+runButton = "Run Development Server"
 
 [[workflows.workflow]]
-name = "Run"
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Start Dev Server"
 author = 40702119
 mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python3 -m gunicorn main:app --bind 0.0.0.0:5000 --reload"
+args = "gunicorn --bind 0.0.0.0:5000 --reload --capture-output --log-level warning main:app"
+
+[[workflows.workflow]]
+name = "Run Development Server"
+author = 40702119
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "gunicorn --bind 0.0.0.0:5000 --reload --workers 1 --timeout 120 main:app"
 
 [[ports]]
 localPort = 5000

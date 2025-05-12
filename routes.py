@@ -89,11 +89,10 @@ def file_to_data_url(file_stream, content_type):
 @app.route('/')
 def index():
     """Home page route"""
-    # Handle health check requests from both ELB and deployment system
-    user_agent = request.headers.get('User-Agent', '')
-    if user_agent.startswith('ELB-HealthChecker') or user_agent.startswith('Replit-Deployments-Health-Check'):
-        return '', 200
-        
+    # Handle health check requests from ELB and deployment system
+    if request.headers.get('User-Agent', '').startswith('ELB-HealthChecker') or request.headers.get('X-Deployment-Health-Check'):
+        return 'OK', 200
+
     user = get_current_user()
 
     # Check if we're editing an existing endcard

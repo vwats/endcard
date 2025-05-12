@@ -4,5 +4,7 @@
     pkgs.python311
     pkgs.postgresql
     pkgs.openssl
+    pkgs.gcc
+    pkgs.python311Packages.greenlet
   ];
 }

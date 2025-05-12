@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.DEBUG)
 @app.route('/health')
 def health_check():
     """Health check endpoint for deployment monitoring"""
-    return '', 200
+    return 'OK', 200
 
 # Ensure upload folder exists
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)

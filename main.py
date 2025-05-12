@@ -11,6 +11,5 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-if __name__ == "__main__":
-    # When using Gunicorn, we don't need to run the app directly
-    from app import app
+# When using Gunicorn, we don't need to run the app directly
+app = app  # This makes the app importable by Gunicorn

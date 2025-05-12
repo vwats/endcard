@@ -30,11 +30,16 @@ db.init_app(app)
 # Create upload folder if it doesn't exist
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-# Create database tables
-with app.app_context():
-    # Import models here to make sure they're registered with SQLAlchemy
-    from models import User, Endcard, UserCredit
-    db.create_all()
+# Import models here to make sure they're registered with SQLAlchemy
+from models import User, Endcard, UserCredit
+
+def init_db():
+    """Initialize database tables"""
+    with app.app_context():
+        db.create_all()
+
+# Initialize database on startup
+init_db()
 
 if __name__ == "__main__":
     app.run(debug=True)

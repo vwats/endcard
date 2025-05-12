@@ -42,7 +42,7 @@ def get_current_user():
     """Get or create a user based on session ID with error handling"""
     try:
         # Skip user creation for health check requests
-        if request.path == '/' and request.method in ['GET', 'HEAD'] and not request.args:
+        if request.path in ['/', '/health'] and request.method in ['GET', 'HEAD'] and not request.args:
             return None
 
         if 'user_session_id' not in session:
@@ -110,6 +110,12 @@ def file_to_data_url(file_stream, content_type):
 
 @app.route('/')
 def index():
+    """Root endpoint for health checks"""
+    # Simple health check that doesn't access the database
+    return 'OK', 200
+
+@app.route('/app')
+def main_app():
     """Main application endpoint"""
     return redirect(url_for('home'))
 

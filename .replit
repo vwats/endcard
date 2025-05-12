@@ -2,7 +2,7 @@
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "python -m gunicorn main:app"]
+run = ["sh", "-c", "cd CodeCraft && python3 -m gunicorn main:app --bind 0.0.0.0:5000"]
 
 [workflows]
 runButton = "Run"
@@ -14,4 +14,4 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd CodeCraft && python -m gunicorn main:app --bind 0.0.0.0:5000"
+args = "cd CodeCraft && python3 -m gunicorn main:app --bind 0.0.0.0:5000"

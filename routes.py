@@ -93,9 +93,17 @@ def index():
         # Ensure session has credits key
         if 'credits' not in session:
             session['credits'] = 0
-
-    # Flash message if user just logged in (message set in google_auth.py)
-    messages = []
+            
+        # Flash message if user just logged in (message set in google_auth.py)
+        messages = []
+            
+        return render_template('index.html', endcard=endcard, messages=messages)
+            
+    except Exception as e:
+        logging.error(f"Error in index route: {str(e)}")
+        db.session.rollback()
+        flash('An error occurred', 'error')
+        return redirect(url_for('index'))
     if session.get('show_welcome', False):
         messages.append('Welcome! You can now purchase credits and track your conversion history.')
         session.pop('show_welcome', None)

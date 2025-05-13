@@ -14,10 +14,15 @@ logger = logging.getLogger(__name__)
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 if not stripe.api_key:
     logger.error("STRIPE_SECRET_KEY is not properly configured")
+    raise ValueError("Stripe secret key is not configured")
     
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+
 if not STRIPE_WEBHOOK_SECRET:
     logger.warning("STRIPE_WEBHOOK_SECRET is not set. Webhook verification will fail.")
+if not STRIPE_PUBLISHABLE_KEY:
+    logger.warning("STRIPE_PUBLISHABLE_KEY is not set. Client-side Stripe integration will fail.")
 
 # Create blueprint
 stripe_blueprint = Blueprint('stripe_handler', __name__)

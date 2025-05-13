@@ -10,8 +10,37 @@ from models import User, UserCredit
 logger = logging.getLogger(__name__)
 
 # Configure Stripe settings
-stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
+stripe_enabled = False
+
+def init_stripe():
+    """Initialize Stripe with graceful fallback"""
+    global stripe_enabled
+
+    api_key = os.environ.get('STRIPE_SECRET_KEY')
+    if not api_key:
+        logger.warning("STRIPE_SECRET_KEY not set - payment features disabled")
+        return False
+
+    stripe.api_key = api_key
+    try:
+        # Test the API key
+        stripe.Account.retrieve()
+        stripe_enabled = True
+        logger.info("Stripe initialized successfully")
+        return True
+    except stripe.error.AuthenticationError as e:
+        logger.error(f"Stripe authentication failed: {str(e)}")
+        return False
+    except Exception as e:
+        logger.error(f"Stripe initialization error: {str(e)}")
+        return False
+
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
+if not STRIPE_WEBHOOK_SECRET:
+    logger.warning("STRIPE_WEBHOOK_SECRET not set - webhook verification will fail")
+
+# Initialize Stripe
+init_stripe()
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
 
 def init_stripe():

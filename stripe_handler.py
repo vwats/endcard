@@ -1,4 +1,3 @@
-
 import os
 import json
 import logging
@@ -10,8 +9,28 @@ from models import User, UserCredit
 # Configure logging
 logger = logging.getLogger(__name__)
 
-# Configure Stripe API key
+# Configure Stripe settings
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+
+def init_stripe():
+    """Initialize and validate Stripe configuration"""
+    if not stripe.api_key:
+        logger.error("STRIPE_SECRET_KEY is not properly configured")
+        return False
+
+    try:
+        # Test the API key by making a simple API call
+        stripe.Account.retrieve()
+        logger.info("Stripe API key verified successfully")
+        return True
+    except stripe.error.AuthenticationError as e:
+        logger.error(f"Stripe authentication error: {str(e)}")
+        return False
+    except Exception as e:
+        logger.error(f"Stripe configuration error: {str(e)}")
+        return False
 
 # Create blueprint
 stripe_blueprint = Blueprint('stripe_handler', __name__)

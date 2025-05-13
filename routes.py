@@ -58,7 +58,10 @@ def file_to_data_url(file_stream, content_type):
     encoded_content = base64.b64encode(file_stream.read()).decode('utf-8')
     return f"data:{content_type};base64,{encoded_content}"
 
+from auth_utils import manage_session
+
 @app.route('/')
+@manage_session
 def index():
     """Home page route"""
     try:
@@ -91,6 +94,7 @@ def index():
 
 @app.route('/history')
 @login_required
+@manage_session
 def history():
     """View conversion history"""
     try:
@@ -110,6 +114,7 @@ def history():
 @app.route('/credits')
 @app.route('/upgrade')
 @login_required
+@manage_session
 def upgrade():
     """Credits management page for viewing and purchasing credits"""
     stripe_public_key = app.config.get('STRIPE_PUBLIC_KEY', '')
@@ -148,6 +153,7 @@ def check_credits():
 
 @app.route('/process_upload', methods=['POST'])
 @login_required
+@manage_session
 @error_handler
 def process_upload():
     """Process file upload and create HTML endcard"""
@@ -286,6 +292,7 @@ def process_upload():
 
 @app.route('/download_template/<template_type>/<int:endcard_id>')
 @login_required
+@manage_session
 def download_template(template_type, endcard_id):
     """Download HTML template"""
     try:

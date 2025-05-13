@@ -28,4 +28,31 @@ def get_current_user():
         db.session.rollback()
 
     # For unauthenticated users or errors, don't create session or credits
+
+
+def manage_session(f):
+    """Decorator to ensure consistent session management"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        try:
+            user = get_current_user()
+            if user and user.is_authenticated:
+                # Ensure credits are always synced
+                if hasattr(user, 'credits') and user.credits:
+                    session['credits'] = user.credits.credits
+                if 'user_id' not in session:
+                    session['user_id'] = user.id
+            else:
+                # Clear sensitive session data if user is not authenticated
+                session.pop('credits', None)
+                session.pop('user_id', None)
+            
+            return f(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Session management error: {str(e)}")
+            db.session.rollback()
+            flash('An error occurred while managing your session', 'error')
+            return redirect(url_for('index'))
+    return decorated_function
+
     return None

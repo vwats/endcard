@@ -36,7 +36,7 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Use fixed redirect URI for production
+    # Get base URL from request or environment
     request_base_url = request.url_root.rstrip('/')
     if request_base_url.startswith('http://'):
         request_base_url = 'https://' + request_base_url[7:]
@@ -69,7 +69,7 @@ def callback():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
 
-    # Use fixed redirect URI for production
+    # Get base URL from request or environment
     request_base_url = request.url_root.rstrip('/')
     if request_base_url.startswith('http://'):
         request_base_url = 'https://' + request_base_url[7:]
@@ -102,7 +102,7 @@ def callback():
     if userinfo_response.json().get("email_verified"):
         google_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
-        users_name = userinfo_response.json().get("given_name", users_email.split('@')[0])
+        users_name = userinfo_response.json.get("given_name", users_email.split('@')[0])
 
         logger.info(f"Authenticated user: {users_email}")
 

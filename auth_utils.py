@@ -1,5 +1,6 @@
 
 import logging
+from functools import wraps
 from flask import session
 from flask_login import current_user
 from app import db

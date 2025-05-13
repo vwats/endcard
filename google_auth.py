@@ -55,7 +55,7 @@ def login():
 
     return redirect(request_uri)
 
-@google_auth.route("/auth/callback")
+@google_auth.route('/callback', methods=['GET'])
 def callback():
     """
     Google callback route - processes the response from Google

@@ -479,10 +479,10 @@ def create_checkout_session():
 
     except stripe.error.AuthenticationError as e:
         logging.error(f"Stripe authentication error: {str(e)}")
-        return jsonify({'error': 'Payment service authentication failed'}), 401
+        return jsonify({'error': 'Invalid API key or authentication failed'}), 401
     except stripe.error.StripeError as e:
         logging.error(f"Stripe error: {str(e)}")
-        return jsonify({'error': str(e)}), 400
+        return jsonify({'error': 'Payment processing error'}), 400
     except Exception as e:
         logging.error(f"Unexpected error in checkout: {str(e)}")
         return jsonify({'error': 'An unexpected error occurred'}), 500

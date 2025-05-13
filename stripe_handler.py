@@ -14,19 +14,23 @@ logger = logging.getLogger(__name__)
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 if not stripe.api_key:
     logger.error("STRIPE_SECRET_KEY is not properly configured")
-    # Don't raise error, just log it
-    stripe.api_key = None
-else:
-    try:
-        # Test the API key by making a simple API call
-        stripe.Account.retrieve()
-        logger.info("Stripe API key verified successfully")
-    except stripe.error.AuthenticationError as e:
-        logger.error(f"Stripe authentication error: {str(e)}")
-        stripe.api_key = None
-    except Exception as e:
-        logger.error(f"Stripe configuration error: {str(e)}")
-        stripe.api_key = None
+    raise ValueError("Stripe secret key is not configured")
+
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+
+# Verify required keys are present
+if not all([stripe.api_key, STRIPE_WEBHOOK_SECRET, STRIPE_PUBLISHABLE_KEY]):
+    logger.error("Missing required Stripe configuration")
+    raise ValueError("Missing required Stripe configuration")
+
+# Test connection to Stripe
+try:
+    stripe.Account.retrieve()
+    logger.info("Successfully connected to Stripe API")
+except stripe.error.AuthenticationError as e:
+    logger.error(f"Stripe authentication failed: {str(e)}")
+    raise ValueError("Stripe authentication failed")
     
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')

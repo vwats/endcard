@@ -12,33 +12,27 @@ logger = logging.getLogger(__name__)
 
 # Configure Stripe API key
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
+
+# Create blueprint
+stripe_blueprint = Blueprint('stripe_handler', __name__)
+
+# Credit packages configuration
+CREDIT_PACKAGES = {
+    'starter': {'credits': 10, 'price': 1000, 'name': 'Starter Package'},  # $10
+    'standard': {'credits': 35, 'price': 2500, 'name': 'Standard Package'},  # $25
+    'pro': {'credits': 70, 'price': 4500, 'name': 'Pro Package'}       # $45
+}
+
+# Log configuration status
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+
 if not stripe.api_key:
-    logger.error("STRIPE_SECRET_KEY is not properly configured")
-    raise ValueError("Stripe secret key is not configured")
-
-STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
-STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
-
-# Verify required keys are present
-if not all([stripe.api_key, STRIPE_WEBHOOK_SECRET, STRIPE_PUBLISHABLE_KEY]):
-    logger.error("Missing required Stripe configuration")
-    raise ValueError("Missing required Stripe configuration")
-
-# Test connection to Stripe
-try:
-    stripe.Account.retrieve()
-    logger.info("Successfully connected to Stripe API")
-except stripe.error.AuthenticationError as e:
-    logger.error(f"Stripe authentication failed: {str(e)}")
-    raise ValueError("Stripe authentication failed")
-    
-STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
-STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
-
+    logger.warning("STRIPE_SECRET_KEY is not set. API functionality will be limited.")
 if not STRIPE_WEBHOOK_SECRET:
-    logger.warning("STRIPE_WEBHOOK_SECRET is not set. Webhook verification will fail.")
+    logger.warning("STRIPE_WEBHOOK_SECRET is not set. Webhook verification will be limited.")
 if not STRIPE_PUBLISHABLE_KEY:
-    logger.warning("STRIPE_PUBLISHABLE_KEY is not set. Client-side Stripe integration will fail.")
+    logger.warning("STRIPE_PUBLISHABLE_KEY is not set. Client-side integration will be limited.")
 
 # Create blueprint
 stripe_blueprint = Blueprint('stripe_handler', __name__)

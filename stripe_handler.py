@@ -15,6 +15,15 @@ stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 if not stripe.api_key:
     logger.error("STRIPE_SECRET_KEY is not properly configured")
     raise ValueError("Stripe secret key is not configured")
+
+# Verify Stripe configuration
+try:
+    # Test the API key by making a simple API call
+    stripe.Account.retrieve()
+    logger.info("Stripe API key verified successfully")
+except stripe.error.AuthenticationError:
+    logger.error("Invalid Stripe API key")
+    raise ValueError("Invalid Stripe API key")
     
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')

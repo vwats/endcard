@@ -37,28 +37,7 @@ ALLOWED_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS.union(ALLOWED_VIDEO_EXTENSIONS)
 # Maximum file size (in bytes) - 4.5MB per file to allow some wiggle room
 MAX_FILE_SIZE = 4.5 * 1024 * 1024
 
-def get_current_user():
-    """Get or create a user based on session ID or logged in status"""
-    try:
-        # If user is authenticated via Flask-Login
-        if current_user.is_authenticated:
-            # Make sure the user has a credit record
-            if not hasattr(current_user, 'credits') or not current_user.credits:
-                user_credit = UserCredit(user_id=current_user.id)
-                db.session.add(user_credit)
-                db.session.commit()
-
-            # Store credits in session for easy access
-            if hasattr(current_user, 'credits') and current_user.credits:
-                session['credits'] = current_user.credits.credits
-
-            return current_user
-    except Exception as e:
-        logging.error(f"Error in get_current_user: {str(e)}")
-        db.session.rollback()
-
-    # For unauthenticated users or errors, don't create session or credits
-    return None
+from auth_utils import get_current_user
 
 
 def allowed_file(filename):

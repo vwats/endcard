@@ -68,7 +68,7 @@ def create_payment_intent():
     """Create a payment intent for Stripe Elements"""
     try:
         # Get user information
-        from routes import get_current_user
+        from auth_utils import get_current_user
         user = get_current_user()
 
         # Get the selected package
@@ -189,7 +189,7 @@ def create_checkout_session():
             return jsonify({'error': 'Invalid package selected'}), 400
 
         # Get user information
-        from routes import get_current_user
+        from auth_utils import get_current_user
         user = get_current_user()
 
         # Get price ID based on package

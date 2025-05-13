@@ -55,5 +55,3 @@ def manage_session(f):
             flash('An error occurred while managing your session', 'error')
             return redirect(url_for('index'))
     return decorated_function
-
-    return None

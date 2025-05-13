@@ -37,7 +37,10 @@ def login():
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
     # Use fixed redirect URI for production
-    redirect_uri = "https://endcardconverter.com/callback"
+    request_base_url = request.url_root.rstrip('/')
+    if request_base_url.startswith('http://'):
+        request_base_url = 'https://' + request_base_url[7:]
+    redirect_uri = f"{request_base_url}/callback"
 
     logger.info(f"Using redirect URI: {redirect_uri}")
 
@@ -67,7 +70,10 @@ def callback():
     token_endpoint = google_provider_cfg["token_endpoint"]
 
     # Use fixed redirect URI for production
-    redirect_uri = "https://endcardconverter.com/callback"
+    request_base_url = request.url_root.rstrip('/')
+    if request_base_url.startswith('http://'):
+        request_base_url = 'https://' + request_base_url[7:]
+    redirect_uri = f"{request_base_url}/callback"
 
     # Prepare and send request to get tokens
     token_url, headers, body = client.prepare_token_request(

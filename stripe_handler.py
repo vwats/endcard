@@ -12,9 +12,10 @@ logger = logging.getLogger(__name__)
 
 # Configure Stripe API key
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
+if not stripe.api_key:
+    logger.error("STRIPE_SECRET_KEY is not properly configured")
+    
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
-
-# Stripe webhook secret must be a string
 if not STRIPE_WEBHOOK_SECRET:
     logger.warning("STRIPE_WEBHOOK_SECRET is not set. Webhook verification will fail.")
 

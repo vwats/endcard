@@ -117,12 +117,12 @@ def history():
 @manage_session
 def upgrade():
     """Credits management page for viewing and purchasing credits"""
-    stripe_public_key = app.config.get('STRIPE_PUBLIC_KEY', '')
-    if not stripe_public_key:
+    stripe_status = get_stripe_status()
+    if not stripe_status['enabled']:
         flash('Stripe payment is not properly configured.', 'error')
-        logging.error('STRIPE_PUBLIC_KEY is not set in the environment')
+        logging.error('Stripe payment system is not properly configured')
     return render_template('upgrade.html', 
-                          stripe_public_key=stripe_public_key)
+                          stripe_public_key=stripe_status['publishable_key'])
 
 def error_handler(func):
     @wraps(func)
@@ -392,12 +392,7 @@ def get_endcard_data(endcard_id):
         }
     })
 
-import stripe
-import os
-
-# Configure Stripe
-stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
-app.config['STRIPE_PUBLIC_KEY'] = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+from stripe_handler import stripe, get_stripe_status
 
 # Initialize package Stripe IDs
 basic_package = {

@@ -40,16 +40,21 @@ def login():
     request_base_url = request.url_root.rstrip('/')
     if request_base_url.startswith('http://'):
         request_base_url = 'https://' + request_base_url[7:]
-    redirect_uri = "https://endcardconverter.com/auth/callback"
+    redirect_uri = request_base_url + url_for('google_auth.callback')
 
     logger.info(f"Using redirect URI: {redirect_uri}")
 
-    # Use library to construct the request for Google login
-    request_uri = client.prepare_request_uri(
-        authorization_endpoint,
-        redirect_uri=redirect_uri,
-        scope=["openid", "email", "profile"],
-    )
+    try:
+        # Use library to construct the request for Google login
+        request_uri = client.prepare_request_uri(
+            authorization_endpoint,
+            redirect_uri=redirect_uri,
+            scope=["openid", "email", "profile"],
+        )
+    except Exception as e:
+        logger.error(f"Error preparing OAuth request: {str(e)}")
+        flash("Authentication error. Please try again.", "error")
+        return redirect(url_for('index'))
 
     logger.info(f"Redirecting to Google: {request_uri}")
 

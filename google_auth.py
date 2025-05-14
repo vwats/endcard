@@ -28,22 +28,17 @@ def login():
     """
     Google login route - redirects to Google's OAuth page
     """
-    # Find out what URL to hit for Google login
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Use dynamic redirect URI based on the current request
+    # Production redirect URI
     redirect_uri = url_for('google_auth.callback', _external=True, _scheme='https')
-    logger.info(f"Using redirect URI: {redirect_uri}")
 
-    # Use library to construct the request for Google login
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
         redirect_uri=redirect_uri,
         scope=["openid", "email", "profile"],
     )
-
-    logger.info(f"Redirecting to Google: {request_uri}")
     return redirect(request_uri)
 
 @google_auth.route("/callback")

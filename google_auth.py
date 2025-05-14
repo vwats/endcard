@@ -58,9 +58,10 @@ def callback():
     redirect_uri = "https://endcardconterer.com/auth/callback"
 
     # Prepare and send request to get tokens
+    authorization_response = f"https://endcardconterer.com{request.path}?{request.query_string.decode()}"
     token_url, headers, body = client.prepare_token_request(
         token_endpoint,
-        authorization_response=request.url,
+        authorization_response=authorization_response,
         redirect_url=redirect_uri,
         code=code,
     )

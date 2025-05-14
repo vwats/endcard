@@ -30,8 +30,8 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Use consistent redirect URI that matches Google Console
-    redirect_uri = request.url_root.rstrip('/') + url_for('google_auth.callback')
+    # Use fixed production redirect URI
+    redirect_uri = "https://endcardconterer.com/auth/callback"
 
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
@@ -54,8 +54,8 @@ def callback():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
 
-    # Use consistent redirect URI that matches Google Console
-    redirect_uri = request.url_root.rstrip('/') + url_for('google_auth.callback')
+    # Use fixed production redirect URI
+    redirect_uri = "https://endcardconterer.com/auth/callback"
 
     # Prepare and send request to get tokens
     token_url, headers, body = client.prepare_token_request(

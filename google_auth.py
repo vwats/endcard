@@ -1,4 +1,3 @@
-
 import json
 import os
 import logging
@@ -31,8 +30,8 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Production redirect URI
-    redirect_uri = url_for('google_auth.callback', _external=True, _scheme='https')
+    # Use consistent production redirect URI
+    redirect_uri = f"https://{request.host}/auth/callback"
 
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
@@ -56,7 +55,7 @@ def callback():
     token_endpoint = google_provider_cfg["token_endpoint"]
 
     # Use consistent production redirect URI
-    redirect_uri = f"https://{request.host}{url_for('google_auth.callback')}"
+    redirect_uri = f"https://{request.host}/auth/callback"
 
     # Prepare and send request to get tokens
     token_url, headers, body = client.prepare_token_request(

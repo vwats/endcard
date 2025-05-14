@@ -34,7 +34,7 @@ def login():
     if 'replit.dev' in request.host:
         redirect_uri = request.url_root.rstrip('/') + url_for('google_auth.callback')
     else:
-        redirect_uri = "https://endcardconterer.com/auth/callback"
+        redirect_uri = "https://endcardconverter.com/auth/callback"
 
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
@@ -58,10 +58,10 @@ def callback():
     token_endpoint = google_provider_cfg["token_endpoint"]
 
     # Use fixed production redirect URI
-    redirect_uri = "https://endcardconterer.com/auth/callback"
+    redirect_uri = "https://endcardconverter.com/auth/callback"
 
     # Prepare and send request to get tokens
-    authorization_response = f"https://endcardconterer.com{request.path}?{request.query_string.decode()}"
+    authorization_response = f"https://endcardconverter.com{request.path}?{request.query_string.decode()}"
     token_url, headers, body = client.prepare_token_request(
         token_endpoint,
         authorization_response=authorization_response,

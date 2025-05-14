@@ -55,8 +55,8 @@ def callback():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
 
-    # Use dynamic redirect URI based on the current request
-    redirect_uri = url_for('google_auth.callback', _external=True, _scheme='https')
+    # Use consistent production redirect URI
+    redirect_uri = f"https://{request.host}{url_for('google_auth.callback')}"
 
     # Prepare and send request to get tokens
     token_url, headers, body = client.prepare_token_request(

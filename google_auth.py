@@ -30,7 +30,7 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    redirect_uri = "https://endcardconverter.com/auth/callback"
+    redirect_uri = "https://endcardconverter.com/callback"
 
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
@@ -54,7 +54,7 @@ def callback():
     token_endpoint = google_provider_cfg["token_endpoint"]
 
     # Use consistent redirect URI
-    redirect_uri = "https://endcardconverter.com/auth/callback"
+    redirect_uri = "https://endcardconverter.com/callback"
 
     # Prepare and send request to get tokens
     authorization_response = f"https://endcardconverter.com{request.path}?{request.query_string.decode()}"

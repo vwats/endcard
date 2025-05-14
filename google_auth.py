@@ -30,8 +30,11 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Use fixed production redirect URI
-    redirect_uri = "https://endcardconterer.com/auth/callback"
+    # Use request-based redirect URI for development and production
+    if 'replit.dev' in request.host:
+        redirect_uri = request.url_root.rstrip('/') + url_for('google_auth.callback')
+    else:
+        redirect_uri = "https://endcardconterer.com/auth/callback"
 
     request_uri = client.prepare_request_uri(
         authorization_endpoint,

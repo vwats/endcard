@@ -1,3 +1,4 @@
+
 import json
 import os
 import logging
@@ -19,11 +20,6 @@ google_auth = Blueprint("google_auth", __name__)
 # OAuth client setup with production configuration
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
-# Production logging setup with reduced verbosity
-logging.getLogger('werkzeug').setLevel(logging.WARNING)
-logging.getLogger('gunicorn.error').setLevel(logging.WARNING)
-logging.getLogger('gunicorn.access').setLevel(logging.WARNING)
-
 # Logging setup
 logger = logging.getLogger(__name__)
 
@@ -36,31 +32,21 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Get base URL from request or environment
-    request_base_url = request.url_root.rstrip('/')
-    if request_base_url.startswith('http://'):
-        request_base_url = 'https://' + request_base_url[7:]
-    redirect_uri = request_base_url + url_for('google_auth.callback')
-
+    # Use dynamic redirect URI based on the current request
+    redirect_uri = url_for('google_auth.callback', _external=True, _scheme='https')
     logger.info(f"Using redirect URI: {redirect_uri}")
 
-    try:
-        # Use library to construct the request for Google login
-        request_uri = client.prepare_request_uri(
-            authorization_endpoint,
-            redirect_uri=redirect_uri,
-            scope=["openid", "email", "profile"],
-        )
-    except Exception as e:
-        logger.error(f"Error preparing OAuth request: {str(e)}")
-        flash("Authentication error. Please try again.", "error")
-        return redirect(url_for('index'))
+    # Use library to construct the request for Google login
+    request_uri = client.prepare_request_uri(
+        authorization_endpoint,
+        redirect_uri=redirect_uri,
+        scope=["openid", "email", "profile"],
+    )
 
     logger.info(f"Redirecting to Google: {request_uri}")
-
     return redirect(request_uri)
 
-@google_auth.route('/callback', methods=['GET'])
+@google_auth.route("/callback")
 def callback():
     """
     Google callback route - processes the response from Google
@@ -74,11 +60,8 @@ def callback():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
 
-    # Get base URL from request and ensure proper callback path
-    request_base_url = request.url_root.rstrip('/')
-    if request_base_url.startswith('http://'):
-        request_base_url = 'https://' + request_base_url[7:]
-    redirect_uri = request_base_url + url_for('google_auth.callback')
+    # Use dynamic redirect URI based on the current request
+    redirect_uri = url_for('google_auth.callback', _external=True, _scheme='https')
 
     # Prepare and send request to get tokens
     token_url, headers, body = client.prepare_token_request(
@@ -107,7 +90,7 @@ def callback():
     if userinfo_response.json().get("email_verified"):
         google_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
-        users_name = userinfo_response.json.get("given_name", users_email.split('@')[0])
+        users_name = userinfo_response.json().get("given_name", users_email.split('@')[0])
 
         logger.info(f"Authenticated user: {users_email}")
 
@@ -157,8 +140,6 @@ def callback():
             session['credits'] = user.credits.credits
 
         flash(f"Welcome, {user.username}!", "success")
-
-        # Redirect to the home page or a specific destination
         return redirect(url_for("index"))
     else:
         flash("Google authentication failed. Please ensure your Google account has a verified email.", "error")

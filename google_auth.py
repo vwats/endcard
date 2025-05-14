@@ -74,11 +74,11 @@ def callback():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
 
-    # Get base URL from request or environment
+    # Get base URL from request and ensure proper callback path
     request_base_url = request.url_root.rstrip('/')
     if request_base_url.startswith('http://'):
         request_base_url = 'https://' + request_base_url[7:]
-    redirect_uri = "https://endcardconverter.com/auth/callback"
+    redirect_uri = request_base_url + url_for('google_auth.callback')
 
     # Prepare and send request to get tokens
     token_url, headers, body = client.prepare_token_request(

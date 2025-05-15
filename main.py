@@ -2,6 +2,9 @@
 from app import app
 import routes  # Import routes to register them with the app
 from google_auth import google_auth  # Import the Google auth blueprint
+
+# Configure production OAuth callback
+app.config['OAUTH_REDIRECT_URI'] = 'https://endcardconverter.com/callback'
 from stripe_handler import stripe_blueprint  # Import the Stripe blueprint
 
 # Register blueprints

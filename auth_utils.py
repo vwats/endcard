@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 def get_current_user():
     """Get or create a user based on session ID or logged in status"""
+    # Production environment user handling
     try:
         # If user is authenticated via Flask-Login
         if current_user.is_authenticated:

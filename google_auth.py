@@ -62,14 +62,13 @@ def callback():
     # Get authorization code Google sent back
     code = request.args.get("code")
 
-    # Find out what URL to hit to get tokens
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
 
     # Use fixed production redirect URI
     redirect_uri = "https://endcardconverter.com/callback"
 
-    # Prepare and send request to get tokens
+    # Get access token 
     token_url, headers, body = client.prepare_token_request(
         token_endpoint,
         authorization_response=request.url,

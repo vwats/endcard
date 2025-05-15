@@ -1,0 +1,120 @@
+2025-05-15 12:13:47.34
+ba79f407
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+2025-05-15 12:13:47.34
+ba79f407
+User
+rv = self.dispatch_request()
+2025-05-15 12:13:47.34
+ba79f407
+User
+^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-15 12:13:47.34
+ba79f407
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+2025-05-15 12:13:47.34
+ba79f407
+User
+return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args) # type: ignore[no-any-return]
+2025-05-15 12:13:47.34
+ba79f407
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-15 12:13:47.34
+ba79f407
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 285, in decorated_view
+2025-05-15 12:13:47.34
+ba79f407
+User
+return current_app.login_manager.unauthorized()
+2025-05-15 12:13:47.34
+ba79f407
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-15 12:13:47.34
+ba79f407
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/login_manager.py", line 196, in unauthorized
+2025-05-15 12:13:47.34
+ba79f407
+User
+redirect_url = make_login_url(login_view, next_url=request.url)
+2025-05-15 12:13:47.34
+ba79f407
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-15 12:13:47.34
+ba79f407
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 120, in login_url
+2025-05-15 12:13:47.34
+ba79f407
+User
+base = expand_login_view(login_view)
+2025-05-15 12:13:47.34
+ba79f407
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-15 12:13:47.34
+ba79f407
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 97, in expand_login_view
+2025-05-15 12:13:47.34
+ba79f407
+User
+return url_for(login_view)
+2025-05-15 12:13:47.34
+ba79f407
+User
+^^^^^^^^^^^^^^^^^^^
+2025-05-15 12:13:47.34
+ba79f407
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/helpers.py", line 232, in url_for
+2025-05-15 12:13:47.34
+ba79f407
+User
+return current_app.url_for(
+2025-05-15 12:13:47.34
+ba79f407
+User
+^^^^^^^^^^^^^^^^^^^^
+2025-05-15 12:13:47.34
+ba79f407
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1121, in url_for
+2025-05-15 12:13:47.34
+ba79f407
+User
+return self.handle_url_build_error(error, endpoint, values)
+2025-05-15 12:13:47.34
+ba79f407
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-15 12:13:47.34
+ba79f407
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1110, in url_for
+2025-05-15 12:13:47.34
+ba79f407
+User
+rv = url_adapter.build( # type: ignore[union-attr]
+2025-05-15 12:13:47.34
+ba79f407
+User
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-05-15 12:13:47.34
+ba79f407
+User
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/werkzeug/routing/map.py", line 924, in build
+2025-05-15 12:13:47.34
+ba79f407
+User
+raise BuildError(endpoint, values, method, self)
+2025-05-15 12:13:47.34
+ba79f407
+User
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'google_auth.google_login'. Did you mean 'google_auth.login' instead?

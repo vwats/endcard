@@ -1,176 +1,176 @@
-    import json
-    import os
-    import logging
-    import requests
-    from flask import Blueprint, redirect, request, url_for, session, flash
-    from flask_login import login_user, logout_user, login_required, current_user
-    from oauthlib.oauth2 import WebApplicationClient
-    from app import app, db
-    from models import User, UserCredit
 
-    # Google OAuth Configuration
-    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
-    GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
-    GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
+import json
+import os
+import logging
+import requests
+from flask import Blueprint, redirect, request, url_for, session, flash
+from flask_login import login_user, logout_user, login_required, current_user
+from oauthlib.oauth2 import WebApplicationClient
+from app import app, db
+from models import User, UserCredit
 
-    # Setup the Blueprint
-    google_auth = Blueprint("google_auth", __name__)
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
+GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
-    # OAuth client setup with production configuration
-    client = WebApplicationClient(GOOGLE_CLIENT_ID)
+# Setup the Blueprint
+google_auth = Blueprint("google_auth", __name__)
 
-    # Production logging setup with reduced verbosity
-    logging.getLogger('werkzeug').setLevel(logging.WARNING)
-    logging.getLogger('gunicorn.error').setLevel(logging.WARNING)
-    logging.getLogger('gunicorn.access').setLevel(logging.WARNING)
+# OAuth client setup with production configuration
+client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
-    # Logging setup
-    logger = logging.getLogger(__name__)
+# Production logging setup with reduced verbosity
+logging.getLogger('werkzeug').setLevel(logging.WARNING)
+logging.getLogger('gunicorn.error').setLevel(logging.WARNING)
+logging.getLogger('gunicorn.access').setLevel(logging.WARNING)
 
-    @google_auth.route("/google_login")
-    def login():
-        """
-        Google login route - redirects to Google's OAuth page
-        """
-        # Find out what URL to hit for Google login
-        google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
-        authorization_endpoint = google_provider_cfg["authorization_endpoint"]
+# Logging setup
+logger = logging.getLogger(__name__)
 
-        # Use fixed redirect URI for production
-        redirect_uri = "https://endcardconverter.com/callback"
+@google_auth.route("/google_login")
+def login():
+    """
+    Google login route - redirects to Google's OAuth page
+    """
+    # Find out what URL to hit for Google login
+    google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
+    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-        logger.info(f"Using redirect URI: {redirect_uri}")
+    # Use fixed redirect URI for production
+    redirect_uri = "https://endcardconverter.com/callback"
 
-        # Use library to construct the request for Google login
-        request_uri = client.prepare_request_uri(
-            authorization_endpoint,
-            redirect_uri=redirect_uri,
-            scope=["openid", "email", "profile"],
-        )
+    logger.info(f"Using redirect URI: {redirect_uri}")
 
-        logger.info(f"Redirecting to Google: {request_uri}")
+    # Use library to construct the request for Google login
+    request_uri = client.prepare_request_uri(
+        authorization_endpoint,
+        redirect_uri=redirect_uri,
+        scope=["openid", "email", "profile"],
+    )
 
-        return redirect(request_uri)
+    logger.info(f"Redirecting to Google: {request_uri}")
 
-    @google_auth.route("/callback")
-    def callback():
-        """
-        Google callback route - processes the response from Google
-        """
-        logger.info("Google callback received")
+    return redirect(request_uri)
 
-        # Get authorization code Google sent back
-        code = request.args.get("code")
+@google_auth.route("/callback")
+def callback():
+    """
+    Google callback route - processes the response from Google
+    """
+    logger.info("Google callback received")
 
-        # Find out what URL to hit to get tokens
-        google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
-        token_endpoint = google_provider_cfg["token_endpoint"]
+    # Get authorization code Google sent back
+    code = request.args.get("code")
 
-        # Use fixed redirect URI for production
-        redirect_uri = "https://endcardconverter.com/callback"
+    # Find out what URL to hit to get tokens
+    google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
+    token_endpoint = google_provider_cfg["token_endpoint"]
 
-        # Prepare and send request to get tokens
-        token_url, headers, body = client.prepare_token_request(
-            token_endpoint,
-            authorization_response=request.url,
-            redirect_url=redirect_uri,
-            code=code,
-        )
+    # Use fixed redirect URI for production
+    redirect_uri = "https://endcardconverter.com/callback"
 
-        token_response = requests.post(
-            token_url,
-            headers=headers,
-            data=body,
-            auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
-        )
+    # Prepare and send request to get tokens
+    token_url, headers, body = client.prepare_token_request(
+        token_endpoint,
+        authorization_response=request.url,
+        redirect_url=redirect_uri,
+        code=code,
+    )
 
-        # Parse the tokens
-        client.parse_request_body_response(json.dumps(token_response.json()))
+    token_response = requests.post(
+        token_url,
+        headers=headers,
+        data=body,
+        auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
+    )
 
-        # Get user info from Google
-        userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-        uri, headers, body = client.add_token(userinfo_endpoint)
-        userinfo_response = requests.get(uri, headers=headers, data=body)
+    # Parse the tokens
+    client.parse_request_body_response(json.dumps(token_response.json()))
 
-        # Verify the user's email is verified by Google
-        if userinfo_response.json().get("email_verified"):
-            google_id = userinfo_response.json()["sub"]
-            users_email = userinfo_response.json()["email"]
-            users_name = userinfo_response.json().get("given_name", users_email.split('@')[0])
+    # Get user info from Google
+    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
 
-            logger.info(f"Authenticated user: {users_email}")
+    # Verify the user's email is verified by Google
+    if userinfo_response.json().get("email_verified"):
+        google_id = userinfo_response.json()["sub"]
+        users_email = userinfo_response.json()["email"]
+        users_name = userinfo_response.json().get("given_name", users_email.split('@')[0])
 
-            # Check if user exists
-            user = User.query.filter_by(google_id=google_id).first()
+        logger.info(f"Authenticated user: {users_email}")
 
-            if not user:
-                # Check if there's an existing anonymous user with the same session ID
-                session_id = session.get('user_session_id')
-                anonymous_user = None
+        # Check if user exists
+        user = User.query.filter_by(google_id=google_id).first()
 
-                if session_id:
-                    anonymous_user = User.query.filter_by(session_id=session_id).first()
+        if not user:
+            # Check if there's an existing anonymous user with the same session ID
+            session_id = session.get('user_session_id')
+            anonymous_user = None
 
-                if anonymous_user:
-                    # Update the anonymous user with Google info
-                    anonymous_user.google_id = google_id
-                    anonymous_user.email = users_email
-                    anonymous_user.username = users_name
-                    anonymous_user.is_authenticated = True
-                    user = anonymous_user
-                    logger.info(f"Updated anonymous user with Google info: {users_email}")
-                else:
-                    # Create a new user
-                    user = User(
-                        google_id=google_id,
-                        email=users_email,
-                        username=users_name,
-                        is_authenticated=True
-                    )
-                    db.session.add(user)
-                    db.session.flush()
+            if session_id:
+                anonymous_user = User.query.filter_by(session_id=session_id).first()
 
-                    # Initialize user credits - 3 free credits for new users
-                    user_credit = UserCredit(user_id=user.id, credits=3)
-                    db.session.add(user_credit)
-                    logger.info(f"Created new user: {users_email}")
+            if anonymous_user:
+                # Update the anonymous user with Google info
+                anonymous_user.google_id = google_id
+                anonymous_user.email = users_email
+                anonymous_user.username = users_name
+                anonymous_user.is_authenticated = True
+                user = anonymous_user
+                logger.info(f"Updated anonymous user with Google info: {users_email}")
+            else:
+                # Create a new user
+                user = User(
+                    google_id=google_id,
+                    email=users_email,
+                    username=users_name,
+                    is_authenticated=True
+                )
+                db.session.add(user)
+                db.session.flush()
 
-                db.session.commit()
+                # Initialize user credits - 3 free credits for new users
+                user_credit = UserCredit(user_id=user.id, credits=3)
+                db.session.add(user_credit)
+                logger.info(f"Created new user: {users_email}")
 
-            # Log in the user
-            login_user(user)
+            db.session.commit()
 
-            # Update session
-            session['user_id'] = user.id
-            if user.credits:
-                session['credits'] = user.credits.credits
+        # Log in the user
+        login_user(user)
 
-            flash(f"Welcome, {user.username}!", "success")
+        # Update session
+        session['user_id'] = user.id
+        if user.credits:
+            session['credits'] = user.credits.credits
 
-            # Redirect to the home page or a specific destination
-            return redirect(url_for("index"))
-        else:
-            flash("Google authentication failed. Please ensure your Google account has a verified email.", "error")
-            return redirect(url_for("index"))
+        flash(f"Welcome, {user.username}!", "success")
 
-    @google_auth.route("/logout")
-    @login_required
-    def logout():
-        """
-        Logout route
-        """
-        logout_user()
-
-        # Clear session, but keep some values
-        user_session_id = session.get('user_session_id')
-
-        # Clear session
-        session.clear()
-
-        # Restore anonymous session ID if it existed
-        if user_session_id:
-            session['user_session_id'] = user_session_id
-
-        flash("You have been logged out.", "info")
+        # Redirect to the home page or a specific destination
         return redirect(url_for("index"))
-        
+    else:
+        flash("Google authentication failed. Please ensure your Google account has a verified email.", "error")
+        return redirect(url_for("index"))
+
+@google_auth.route("/logout")
+@login_required
+def logout():
+    """
+    Logout route
+    """
+    logout_user()
+
+    # Clear session, but keep some values
+    user_session_id = session.get('user_session_id')
+
+    # Clear session
+    session.clear()
+
+    # Restore anonymous session ID if it existed
+    if user_session_id:
+        session['user_session_id'] = user_session_id
+
+    flash("You have been logged out.", "info")
+    return redirect(url_for("index"))

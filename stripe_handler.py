@@ -40,8 +40,20 @@ def init_stripe():
 if not STRIPE_WEBHOOK_SECRET:
     logger.warning("STRIPE_WEBHOOK_SECRET not set - webhook verification will fail")
 
-# Initialize Stripe on module import
+# Initialize Stripe and check environment variables
 init_stripe()
+
+# Check if environment variables are set and log status
+stripe_vars = [
+    'STRIPE_SECRET_KEY', 'STRIPE_PUBLISHABLE_KEY', 'STRIPE_WEBHOOK_SECRET',
+    'STRIPE_BASIC_PRICE_ID', 'STRIPE_STANDARD_PRICE_ID', 'STRIPE_PRO_PRICE_ID',
+    'STRIPE_BASIC_PRODUCT_ID', 'STRIPE_STANDARD_PRODUCT_ID',
+    'STRIPE_PRO_PRODUCT_ID'
+]
+
+for var in stripe_vars:
+    if not os.environ.get(var):
+        logger.warning(f"Environment variable {var} is not set")
 
 def get_stripe_status():
     """Get current Stripe configuration status"""

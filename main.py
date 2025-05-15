@@ -1,3 +1,4 @@
+
 from app import app
 import routes  # Import routes to register them with the app
 from google_auth import google_auth  # Import the Google auth blueprint

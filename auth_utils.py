@@ -1,7 +1,7 @@
 
 import logging
 from functools import wraps
-from flask import session
+from flask import session, flash, redirect, url_for
 from flask_login import current_user
 from app import db
 from models import UserCredit
@@ -27,9 +27,7 @@ def get_current_user():
     except Exception as e:
         logger.error(f"Error in get_current_user: {str(e)}")
         db.session.rollback()
-
-    # For unauthenticated users or errors, don't create session or credits
-
+    return None
 
 def manage_session(f):
     """Decorator to ensure consistent session management"""

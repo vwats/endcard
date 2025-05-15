@@ -7,8 +7,5 @@ from stripe_handler import stripe_blueprint  # Import the Stripe blueprint
 app.register_blueprint(google_auth, url_prefix='/auth')
 app.register_blueprint(stripe_blueprint, url_prefix='/api/stripe')
 
-# Configure production OAuth callback
-app.config['OAUTH_REDIRECT_URI'] = 'https://endcardconverter.com/callback'
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

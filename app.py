@@ -53,6 +53,7 @@ app.config["UPLOAD_FOLDER"] = "tmp_uploads"
 # Google OAuth config
 app.config["GOOGLE_CLIENT_ID"] = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
 app.config["GOOGLE_CLIENT_SECRET"] = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
+app.config["OAUTH_REDIRECT_URI"] = "https://endcardconverter.com/callback"
 
 # Initialize the app with SQLAlchemy
 db.init_app(app)

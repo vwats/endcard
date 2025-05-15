@@ -473,7 +473,7 @@ def payment_success():
     """Handle successful payment and credit allocation"""
     session_id = request.args.get('session_id')
     if not session_id:
-        return redirect(url_for('credits'))
+        return redirect(url_for('upgrade'))
 
     try:
         checkout_session = stripe.checkout.Session.retrieve(session_id)

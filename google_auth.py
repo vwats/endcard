@@ -37,7 +37,7 @@ def login():
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
     # Use fixed production redirect URI
-    redirect_uri = "https://endcardconverter.com/callback"
+    redirect_uri = "https://endcardconverter.com/google_login/callback"
 
     logger.info(f"Using redirect URI: {redirect_uri}")
 
@@ -52,7 +52,7 @@ def login():
 
     return redirect(request_uri)
 
-@google_auth.route('/callback')
+@google_auth.route('/google_login/callback')
 def callback():
     try:
         if request.url != "https://endcardconverter.com/callback":

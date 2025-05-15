@@ -61,7 +61,7 @@ db.init_app(app)
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = "google_auth.google_login"  # Redirect to Google login route
+login_manager.login_view = "google_auth.login"  # Redirect to Google login route
 login_manager.login_message = "Please log in to access this page."
 login_manager.login_message_category = "warning"
 login_manager.session_protection = "strong"

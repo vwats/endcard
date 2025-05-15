@@ -72,7 +72,7 @@ def callback():
     token_url, headers, body = client.prepare_token_request(
         token_endpoint,
         authorization_response=request.url,
-        redirect_url=redirect_uri,
+        redirect_url="https://endcardconverter.com/callback",
         code=code,
     )
 

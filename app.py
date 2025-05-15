@@ -60,7 +60,7 @@ db.init_app(app)
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = "google_auth.google_login"  # Redirect to google_login route when login is required
+login_manager.login_view = "google_auth.login"  # Redirect to login route when login is required
 
 @login_manager.user_loader
 def load_user(user_id):

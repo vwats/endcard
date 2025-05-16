@@ -1,4 +1,3 @@
-
 import json
 import os
 import logging
@@ -52,7 +51,7 @@ def login():
     logger.info(f"Redirecting to Google: {request_uri}")
     return redirect(request_uri)
 
-@google_auth.route("/google_login/callback")
+@google_auth.route("/google_login/callback", methods=['GET'])
 def callback():
     try:
         logger.info("Google callback received")
@@ -161,16 +160,16 @@ def logout():
     Logout route
     """
     logout_user()
-    
+
     # Clear session, but keep some values
     user_session_id = session.get('user_session_id')
-    
+
     # Clear session
     session.clear()
-    
+
     # Restore anonymous session ID if it existed
     if user_session_id:
         session['user_session_id'] = user_session_id
-        
+
     flash("You have been logged out.", "info")
     return redirect(url_for("index"))

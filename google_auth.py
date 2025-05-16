@@ -36,12 +36,7 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Use fixed production redirect URI
     redirect_uri = "https://endcardconverter.com/google_login/callback"
-
-    logger.info(f"Using redirect URI: {redirect_uri}")
-
-    # Use library to construct the request for Google login
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
         redirect_uri=redirect_uri,

@@ -1,4 +1,3 @@
-
 import json
 import os
 import logging
@@ -32,6 +31,10 @@ def login():
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
     redirect_uri = "https://endcardconverter.com/google_login/callback"
+
+    logger.info(f"Using redirect URI: {redirect_uri}")
+
+    # Use library to construct the request for Google login
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
         redirect_uri=redirect_uri,
@@ -55,9 +58,10 @@ def callback():
         google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
         token_endpoint = google_provider_cfg["token_endpoint"]
 
+        # Use fixed redirect URI for production
         redirect_uri = "https://endcardconverter.com/google_login/callback"
 
-        # Get access token
+        # Prepare and send request to get tokens
         token_url, headers, body = client.prepare_token_request(
             token_endpoint,
             authorization_response=request.url,

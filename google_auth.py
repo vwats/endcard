@@ -1,3 +1,4 @@
+
 import json
 import os
 import logging
@@ -19,11 +20,6 @@ google_auth = Blueprint("google_auth", __name__)
 # OAuth client setup with production configuration
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
-# Production logging setup with reduced verbosity
-logging.getLogger('werkzeug').setLevel(logging.WARNING)
-logging.getLogger('gunicorn.error').setLevel(logging.WARNING)
-logging.getLogger('gunicorn.access').setLevel(logging.WARNING)
-
 # Logging setup
 logger = logging.getLogger(__name__)
 
@@ -32,7 +28,6 @@ def login():
     """
     Google login route - redirects to Google's OAuth page
     """
-    # Find out what URL to hit for Google login
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
@@ -43,11 +38,13 @@ def login():
         scope=["openid", "email", "profile"],
     )
 
-    logger.info(f"Redirecting to Google: {request_uri}")
     return redirect(request_uri)
 
-@google_auth.route("/google_login/callback", methods=['GET'])
+@google_auth.route("/google_login/callback")
 def callback():
+    """
+    Google callback route - processes the response from Google
+    """
     try:
         logger.info("Google callback received")
 
@@ -58,7 +55,6 @@ def callback():
         google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
         token_endpoint = google_provider_cfg["token_endpoint"]
 
-        # Use fixed production redirect URI
         redirect_uri = "https://endcardconverter.com/google_login/callback"
 
         # Get access token

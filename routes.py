@@ -419,9 +419,9 @@ pro_package = {
 def create_checkout_session():
     try:
         if request.is_json:
-            package_id = request.json.get('package_id')
+            package_id = request.json.get('package')
         else:
-            package_id = request.form.get('package_id')
+            package_id = request.form.get('package')
             
         if not package_id:
             return jsonify({'error': 'No package selected'}), 400

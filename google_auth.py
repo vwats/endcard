@@ -86,9 +86,10 @@ def callback():
 
         # Verify the user's email is verified by Google
         if userinfo_response.json().get("email_verified"):
-            google_id = userinfo_response.json()["sub"]
-            users_email = userinfo_response.json()["email"]
-            users_name = userinfo_response.json.get("given_name", users_email.split('@')[0])
+            user_info = userinfo_response.json()
+            google_id = user_info["sub"]
+            users_email = user_info["email"]
+            users_name = user_info.get("given_name", users_email.split('@')[0])
 
             logger.info(f"Authenticated user: {users_email}")
 

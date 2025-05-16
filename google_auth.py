@@ -168,4 +168,3 @@ def logout():
 
     flash("You have been logged out.", "info")
     return redirect(url_for("index"))
-```

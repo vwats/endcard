@@ -55,9 +55,6 @@ def login():
 @google_auth.route('/google_login/callback')
 def callback():
     try:
-        if request.url != "https://endcardconverter.com/callback":
-            return redirect("https://endcardconverter.com/callback?" + request.query_string.decode())
-
         # Get authorization code Google sent back
         code = request.args.get("code")
 
@@ -71,7 +68,7 @@ def callback():
         token_url, headers, body = client.prepare_token_request(
             token_endpoint,
             authorization_response=request.url,
-            redirect_url="https://endcardconverter.com/google_login/callback",
+            redirect_url="https://endcardconverter.com/google_login/callback", 
             code=code,
         )
 

@@ -436,17 +436,13 @@ def create_checkout_session():
         else:
             return jsonify({'error': 'Invalid package selected'}), 400
 
+        logging.info(f"Creating Stripe session for package: {package_id}")
+        logging.info(f"Package details: {json.dumps(package)}")
+        
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
-                'price_data': {
-                    'currency': 'usd',
-                    'unit_amount': package['price'],
-                    'product_data': {
-                        'name': f"{package_id.title()} Package",
-                        'description': f"{package['credits']} Credits"
-                    },
-                },
+                'price': package['stripe_price_id'],  # Use the actual price ID instead of price_data
                 'quantity': 1,
             }],
             mode='payment',
@@ -457,6 +453,7 @@ def create_checkout_session():
                 'credits': package['credits']
             }
         )
+        logging.info(f"Stripe session created successfully: {checkout_session.id}")
         return jsonify({'session_id': checkout_session.id})
     except stripe.error.AuthenticationError as e:
         logging.error(f"Stripe authentication error: {str(e)}")

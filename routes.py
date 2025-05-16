@@ -1,4 +1,3 @@
-
 import os
 import logging
 import base64
@@ -68,19 +67,19 @@ def index():
         user = get_current_user()
         endcard_id = request.args.get('endcard_id')
         endcard = None
-        
+
         if user and endcard_id:
             endcard = Endcard.query.filter_by(id=endcard_id, user_id=user.id).first()
-            
+
         # Ensure session has credits key
         if 'credits' not in session:
             session['credits'] = 0
-            
+
         # Flash message if user just logged in (message set in google_auth.py)
         messages = []
-            
+
         return render_template('index.html', endcard=endcard, messages=messages)
-            
+
     except Exception as e:
         logging.error(f"Error in index route: {str(e)}")
         db.session.rollback()
@@ -163,7 +162,7 @@ def process_upload():
                 'success': False,
                 'error': 'Please sign in to convert your files.'
             })
-            
+
         user, credit_record = check_credits()
         # Check if editing existing endcard
         endcard_id = request.form.get('endcard_id')
@@ -309,10 +308,10 @@ def download_template(template_type, endcard_id):
             if not credit_record.deduct_credit():
                 flash('Insufficient credits', 'error')
                 return redirect(url_for('credits'))
-                
+
             db.session.commit()
             session['credits'] = user.credits.credits
-            
+
         except Exception as e:
             db.session.rollback()
             logging.error(f"Error processing template download: {str(e)}")
@@ -416,9 +415,9 @@ pro_package = {
     'price': 4500
 }
 
-
-
-    except stripe.error.AuthenticationError as e:
+try:
+    pass
+except stripe.error.AuthenticationError as e:
         logging.error(f"Stripe authentication error: {str(e)}")
         return jsonify({'error': 'Invalid API key or authentication failed'}), 401
     except stripe.error.StripeError as e:

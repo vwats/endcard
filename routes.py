@@ -418,6 +418,8 @@ pro_package = {
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
     try:
+        import json
+        
         if request.is_json:
             package_id = request.json.get('package')
         else:
@@ -431,14 +433,14 @@ def create_checkout_session():
             return jsonify({'error': 'User not authenticated'}), 401
 
         package = None
-        if package_id == 'starter':
+        if package_id in ['starter', 'basic']:
             package = basic_package
-        elif package_id == 'standard':
+        elif package_id in ['standard', 'popular']:
             package = standard_package
         elif package_id == 'pro':
             package = pro_package
         else:
-            return jsonify({'error': f'Invalid package selected: {package_id}'}, 400)
+            return jsonify({'error': 'Invalid package selected'}, 400)
 
         logging.info(f"Creating Stripe session for package: {package_id}")
         logging.info(f"Package details: {json.dumps(package)}")

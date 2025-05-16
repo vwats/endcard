@@ -65,13 +65,13 @@ def callback():
         token_endpoint = google_provider_cfg["token_endpoint"]
 
         # Use fixed production redirect URI
-        redirect_uri = "https://endcardconverter.com/callback"
+        redirect_uri = "https://endcardconverter.com/google_login/callback"
 
         # Get access token 
         token_url, headers, body = client.prepare_token_request(
             token_endpoint,
             authorization_response=request.url,
-            redirect_url="https://endcardconverter.com/callback",
+            redirect_url="https://endcardconverter.com/google_login/callback",
             code=code,
         )
 

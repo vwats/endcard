@@ -416,47 +416,7 @@ pro_package = {
     'price': 4500
 }
 
-@app.route('/create-checkout-session', methods=['POST'])
-@login_required
-def create_checkout_session():
-    """Create Stripe checkout session for credit packages"""
-    try:
-        user = get_current_user()
-        package = request.form.get('package', 'starter')
 
-        packages = {
-            'starter': {'credits': 10, 'price': 1000},  # $10
-            'standard': {'credits': 30, 'price': 2500},  # $25 
-            'pro': {'credits': 60, 'price': 4500}       # $45
-        }
-
-        pkg = packages.get(package, packages['starter'])
-
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': 'usd',
-                    'product_data': {
-                        'name': f"EndCard Pro - {pkg['credits']} Credits",
-                        'description': f"One-time purchase of {pkg['credits']} credits for EndCard Converter Pro"
-                    },
-                    'unit_amount': pkg['price']
-                },
-                'quantity': 1
-            }],
-            mode='payment',
-            success_url=request.host_url + 'payment/success?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url=request.host_url + 'credits',
-            metadata={
-                'user_id': user.id,
-                'credits': pkg['credits']
-            }
-        )
-
-        return jsonify({
-            'id': checkout_session.id
-        })
 
     except stripe.error.AuthenticationError as e:
         logging.error(f"Stripe authentication error: {str(e)}")

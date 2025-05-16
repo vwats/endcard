@@ -228,44 +228,39 @@ def handle_payment_failure(payment_intent):
 @stripe_blueprint.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
     try:
-        data = json.loads(request.data)
-        package = data.get('package', 'starter')
-
+        package = request.form.get('package', 'starter')
         if package not in CREDIT_PACKAGES:
             return jsonify({'error': 'Invalid package selected'}), 400
 
-        # Get user information
         from auth_utils import get_current_user
         user = get_current_user()
-
-        # Get price ID based on package
-        price_ids = {
-            'starter': os.environ.get('STRIPE_BASIC_PRICE_ID'),
-            'popular': os.environ.get('STRIPE_STANDARD_PRICE_ID'),
-            'pro': os.environ.get('STRIPE_PRO_PRICE_ID')
-        }
-
-        price_id = price_ids.get(package)
-        if not price_id:
-            return jsonify({'error': 'Invalid package selected'}), 400
+        pkg = CREDIT_PACKAGES[package]
 
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
-                'price': price_id,
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': pkg['name'],
+                        'description': f"One-time purchase of {pkg['credits']} credits"
+                    },
+                    'unit_amount': pkg['price']
+                },
                 'quantity': 1
             }],
-            mode='subscription',
+            mode='payment',
             success_url=request.host_url + 'payment/success?session_id={CHECKOUT_SESSION_ID}',
             cancel_url=request.host_url + 'credits',
             metadata={
                 'user_id': user.id,
-                'package': package
+                'credits': pkg['credits']
             }
         )
 
-        return jsonify({'sessionId': checkout_session.id})
-
+        return jsonify({
+            'id': checkout_session.id
+        })
     except Exception as e:
         logger.error(f"Error creating checkout session: {str(e)}")
         return jsonify({'error': str(e)}), 400

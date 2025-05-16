@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             reader.onload = function(e) {
                 previewArea.classList.remove('d-none');
-                
+
                 const isVideo = file.type.startsWith('video/');
                 if (isVideo) {
                     videoPreview.src = e.target.result;
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
         formData.append('portrait_file', portraitFile);
         formData.append('landscape_file', landscapeFile);
-        
+
         // If editing an existing endcard, add its ID
         if (endcardId && endcardId.value) {
             formData.append('endcard_id', endcardId.value);
@@ -135,22 +135,25 @@ document.addEventListener('DOMContentLoaded', function() {
         // Send the request
         fetch('/process_upload', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
             body: formData
         })
         .then(response => response.json())
         .then(data => {
             loadingIndicator.classList.add('d-none');
-            
+
             if (data.success) {
                 // Store endcard ID for future use
                 currentEndcardId = data.endcard_id;
-                
+
                 // Update the preview iframe
                 updateEndcardPreview(data);
-                
+
                 // Show results
                 resultsContainer.classList.remove('d-none');
-                
+
                 // Scroll to results
                 resultsContainer.scrollIntoView({behavior: 'smooth'});
             } else {
@@ -168,10 +171,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function showError(message) {
         errorContainer.classList.remove('d-none');
         errorMessage.textContent = message;
-        
+
         // Scroll to error
         errorContainer.scrollIntoView({behavior: 'smooth'});
-        
+
         // Hide after 10 seconds
         setTimeout(() => {
             errorContainer.classList.add('d-none');
@@ -198,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update endcard preview
     function updateEndcardPreview(data) {
         if (!endcardPreview) return;
-        
+
         // Create a blob URL for the iframe
         const html = `
         <!DOCTYPE html>
@@ -237,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const isPortrait = () => window.innerHeight > window.innerWidth;
                 const portrait = document.getElementById('portrait');
                 const landscape = document.getElementById('landscape');
-                
+
                 function updateOrientation() {
                     if (isPortrait()) {
                         portrait.classList.add('active');
@@ -247,17 +250,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         landscape.classList.add('active');
                     }
                 }
-                
+
                 window.addEventListener('resize', updateOrientation);
                 updateOrientation();
             </script>
         </body>
         </html>
         `;
-        
+
         const blob = new Blob([html], {type: 'text/html'});
         const url = URL.createObjectURL(blob);
-        
+
         endcardPreview.src = url;
     }
 

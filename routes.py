@@ -418,7 +418,11 @@ pro_package = {
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
     try:
-        package_id = request.json.get('package_id')
+        if request.is_json:
+            package_id = request.json.get('package_id')
+        else:
+            package_id = request.form.get('package_id')
+            
         if not package_id:
             return jsonify({'error': 'No package selected'}), 400
 

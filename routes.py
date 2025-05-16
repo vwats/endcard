@@ -19,8 +19,10 @@ from flask import (
 )
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
+import stripe
 from app import app, db
 from models import User, Endcard, UserCredit
+from auth_utils import get_current_user
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -35,8 +37,6 @@ ALLOWED_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS.union(ALLOWED_VIDEO_EXTENSIONS)
 
 # Maximum file size (in bytes) - 4.5MB per file to allow some wiggle room
 MAX_FILE_SIZE = 4.5 * 1024 * 1024
-
-from auth_utils import get_current_user
 
 
 def allowed_file(filename):

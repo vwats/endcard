@@ -419,14 +419,14 @@ pro_package = {
 
 
     except stripe.error.AuthenticationError as e:
-    logging.error(f"Stripe authentication error: {str(e)}")
-    return jsonify({'error': 'Invalid API key or authentication failed'}), 401
-except stripe.error.StripeError as e:
-    logging.error(f"Stripe error: {str(e)}")
-    return jsonify({'error': 'Payment processing error'}), 400
-except Exception as e:
-    logging.error(f"Unexpected error in checkout: {str(e)}")
-    return jsonify({'error': 'An unexpected error occurred'}), 500
+        logging.error(f"Stripe authentication error: {str(e)}")
+        return jsonify({'error': 'Invalid API key or authentication failed'}), 401
+    except stripe.error.StripeError as e:
+        logging.error(f"Stripe error: {str(e)}")
+        return jsonify({'error': 'Payment processing error'}), 400
+    except Exception as e:
+        logging.error(f"Unexpected error in checkout: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
 
 @app.route('/payment/success')
 def payment_success():

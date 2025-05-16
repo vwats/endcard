@@ -88,7 +88,7 @@ def callback():
         if userinfo_response.json().get("email_verified"):
             google_id = userinfo_response.json()["sub"]
             users_email = userinfo_response.json()["email"]
-            users_name = userinfo_response.json().get("given_name", users_email.split('@')[0])
+            users_name = userinfo_response.json.get("given_name", users_email.split('@')[0])
 
             logger.info(f"Authenticated user: {users_email}")
 
@@ -168,3 +168,4 @@ def logout():
 
     flash("You have been logged out.", "info")
     return redirect(url_for("index"))
+```

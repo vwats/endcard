@@ -415,9 +415,50 @@ pro_package = {
     'price': 4500
 }
 
-try:
-    pass
-except stripe.error.AuthenticationError as e:
+@app.route('/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    try:
+        package_id = request.json.get('package_id')
+        if not package_id:
+            return jsonify({'error': 'No package selected'}), 400
+
+        user = get_current_user()
+        if not user:
+            return jsonify({'error': 'User not authenticated'}), 401
+
+        package = None
+        if package_id == 'basic':
+            package = basic_package
+        elif package_id == 'standard':
+            package = standard_package
+        elif package_id == 'pro':
+            package = pro_package
+        else:
+            return jsonify({'error': 'Invalid package selected'}), 400
+
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'unit_amount': package['price'],
+                    'product_data': {
+                        'name': f"{package_id.title()} Package",
+                        'description': f"{package['credits']} Credits"
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=request.host_url + 'payment/success?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=request.host_url + 'credits',
+            metadata={
+                'user_id': user.id,
+                'credits': package['credits']
+            }
+        )
+        return jsonify({'session_id': checkout_session.id})
+    except stripe.error.AuthenticationError as e:
         logging.error(f"Stripe authentication error: {str(e)}")
         return jsonify({'error': 'Invalid API key or authentication failed'}), 401
     except stripe.error.StripeError as e:
